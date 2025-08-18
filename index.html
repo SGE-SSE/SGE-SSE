@@ -2,144 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SAI GANESH ELECTRICALS - Catalog</title>
+  <title>Sai Ganesh Electricals - SSE</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
-    h1 { text-align: center; color: #2c3e50; }
-    .search-box { text-align: center; margin-bottom: 20px; }
-    input[type="text"] { width: 60%; padding: 10px; font-size: 16px; }
-    .category { margin-top: 20px; }
-    .category h2 { background: #2c3e50; color: white; padding: 10px; cursor: pointer; border-radius: 5px; }
-    .items { display: none; margin-left: 20px; }
-    .item { padding: 5px; cursor: pointer; border-bottom: 1px solid #ccc; }
-    .item:hover { background: #f1f1f1; }
-    .highlight { background: yellow; }
-    #selected { margin-top: 30px; padding: 10px; border: 1px solid #ccc; background: white; border-radius: 5px; }
-    .selected-item { margin: 5px 0; }
-    .remove-btn { margin-left: 10px; color: red; cursor: pointer; }
-    .btn { display: inline-block; margin: 10px 5px; padding: 10px 15px; background: #25d366; color: white; text-decoration: none; border-radius: 5px; }
-    .btn:hover { opacity: 0.8; }
-    .email-btn { background: #3498db; }
-    footer { margin-top: 40px; text-align: center; font-size: 14px; color: #555; }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    header { font-size: 20px; font-weight: bold; }
+    .tagline { font-size: 14px; color: #555; margin-bottom: 20px; }
+    #searchBox { width: 100%; padding: 8px; }
+    #suggestions { border: 1px solid #ccc; max-height: 150px; overflow-y: auto; display: none; }
+    #suggestions div { padding: 8px; cursor: pointer; }
+    #suggestions div:hover { background: #f0f0f0; }
+    #selected { margin-top: 20px; padding: 10px; border: 1px solid #333; }
+    .item { display: flex; justify-content: space-between; margin: 5px 0; }
+    footer { margin-top: 30px; font-size: 13px; text-align: center; }
+    button { margin: 10px 5px; padding: 8px 15px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h1>SAI GANESH ELECTRICALS - Product Catalog</h1>
- 
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search for products...">
-  </div>
 
-  <div id="catalog"></div>
+<header>
+  Sai Ganesh Electricals - SSE
+</header>
+<div class="tagline">
+  Wires & Cables • Conduit & Fittings • Fans • Appliances • Hardware • Lighting • Switchgear
+</div>
 
-  <div id="selected">
-    <h2>Selected Items</h2>
-    <div id="selectedItems"></div>
-    <a id="whatsappBtn" class="btn" href="#" target="_blank">Send via WhatsApp</a>
-    <a id="emailBtn" class="btn email-btn" href="#">Send via Email</a>
-  </div>
+<input type="text" id="searchBox" placeholder="Search your item...">
+<div id="suggestions"></div>
 
-  <footer>
-    <p><b>SAI GANESH ELECTRICALS - SSE</b><br>
-    PROP: DASARI KRISHNA<br>
-    Phone: 9885750057 | Email: krishnadsge@gmail.com<br>
-    Sales Executive: VINODHARSHA | Email: vinodharsha21@gmail.com | WhatsApp: 7483362854<br>
-    <i>We may be stationary, but our reach is dynamic.</i></p>
-  </footer>
+<div id="selected">
+  <strong>Selected Items</strong>
+  <div id="selectedList"></div>
+</div>
 
-  <script>
-    const data = {
-      "Conduit and Fittings": ["PVC Conduit Pipe", "GI Flexible Pipe", "Conduit Coupler"],
-      "Fan and Appliances": ["Ceiling Fan", "Exhaust Fan", "Table Fan"],
-      "Hardware and Accessories": ["Screws Box", "Drill Machine", "Wall Clips"],
-      "Lighting": ["LED Bulb 9W", "Tube Light 20W", "Street Light 50W"],
-      "Switches, Plates, and Accessories": ["Modular Switch", "Switch Plate", "Socket 16A"],
-      "Switchgear and Protection": ["MCB 16A", "ELCB 30mA", "Distribution Board"],
-      "Wires and Cables": ["1 sqmm Wire", "1.5 sqmm Wire", "3 Core Cable"]
-    };
+<div>
+  <button onclick="sendWhatsApp()">Send via WhatsApp</button>
+  <button onclick="sendEmail()">Send via Email</button>
+</div>
 
-    let selectedItems = [];
+<footer>
+  <p><b>SAI GANESH ELECTRICALS - SSE</b> | Prop: Dasari Krishna</p>
+  <p>Phone: 9885750057 | Email: krishnadsge@gmail.com</p>
+  <p>Sales Executive: Vinodharsha | Email: vinodharsha21@gmail.com | WhatsApp: 7483362854</p>
+  <p><i>"We may be stationary, but our reach is dynamic – always here to power your needs."</i></p>
+</footer>
 
-    function buildCatalog() {
-      const catalog = document.getElementById("catalog");
-      catalog.innerHTML = "";
-      for (let category in data) {
-        let catDiv = document.createElement("div");
-        catDiv.classList.add("category");
-       
-        let header = document.createElement("h2");
-        header.textContent = category;
-        header.onclick = () => {
-          let itemsDiv = header.nextElementSibling;
-          itemsDiv.style.display = (itemsDiv.style.display === "block") ? "none" : "block";
-        };
-        catDiv.appendChild(header);
+<script>
+const items = [
+  "1sqmm 90m Copper Wire",
+  "1.5sqmm 90m Copper Wire",
+  "2.5sqmm 90m Copper Wire",
+  "4sqmm 90m Copper Wire",
+  "Fan Regulator",
+  "LED Bulb 9W",
+  "Switch 6A 1 Way",
+  "MCB 16A",
+  "PVC Conduit 20mm"
+]; // later we can load from your Excel/CSV
 
-        let itemsDiv = document.createElement("div");
-        itemsDiv.classList.add("items");
-        data[category].forEach(item => {
-          let itemDiv = document.createElement("div");
-          itemDiv.classList.add("item");
-          itemDiv.textContent = item;
-          itemDiv.onclick = () => addItem(item);
-          itemsDiv.appendChild(itemDiv);
-        });
-        catDiv.appendChild(itemsDiv);
-        catalog.appendChild(catDiv);
-      }
-    }
+const searchBox = document.getElementById('searchBox');
+const suggestions = document.getElementById('suggestions');
+const selectedList = document.getElementById('selectedList');
+let selectedItems = [];
 
-    function searchCatalog() {
-      const text = document.getElementById("searchInput").value.toLowerCase();
-      document.querySelectorAll(".items").forEach(div => div.style.display = "none");
+searchBox.addEventListener('input', function() {
+  const query = searchBox.value.toLowerCase().replace(/\s+/g, '');
+  suggestions.innerHTML = '';
+  if (!query) { suggestions.style.display = 'none'; return; }
+  const matches = items.filter(it => it.toLowerCase().replace(/\s+/g, '').includes(query));
+  matches.forEach(match => {
+    const div = document.createElement('div');
+    div.textContent = match;
+    div.onclick = () => addItem(match);
+    suggestions.appendChild(div);
+  });
+  suggestions.style.display = matches.length ? 'block' : 'none';
+});
 
-      if (text.trim() === "") return;
+function addItem(item) {
+  if (!selectedItems.includes(item)) {
+    selectedItems.push(item);
+    renderSelected();
+  }
+  suggestions.style.display = 'none';
+  searchBox.value = '';
+}
 
-      document.querySelectorAll(".item").forEach(item => {
-        let content = item.textContent.toLowerCase();
-        if (content.includes(text)) {
-          item.style.display = "block";
-          let parent = item.closest(".items");
-          parent.style.display = "block";
-          let regex = new RegExp(`(${text})`, "gi");
-          item.innerHTML = item.textContent.replace(regex, "<span class='highlight'>$1</span>");
-        } else {
-          item.style.display = "none";
-          item.innerHTML = item.textContent;
-        }
-      });
-    }
+function renderSelected() {
+  selectedList.innerHTML = '';
+  selectedItems.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `<span>${item}</span> <button onclick="removeItem(${idx})">❌</button>`;
+    selectedList.appendChild(div);
+  });
+}
 
-    function addItem(item) {
-      if (!selectedItems.includes(item)) {
-        selectedItems.push(item);
-        updateSelected();
-      }
-    }
+function removeItem(index) {
+  selectedItems.splice(index, 1);
+  renderSelected();
+}
 
-    function removeItem(item) {
-      selectedItems = selectedItems.filter(i => i !== item);
-      updateSelected();
-    }
+function sendWhatsApp() {
+  const msg = "Customer enquiry:\n" + selectedItems.join("\n");
+  window.open("https://wa.me/917483362854?text=" + encodeURIComponent(msg), "_blank");
+}
 
-    function updateSelected() {
-      const container = document.getElementById("selectedItems");
-      container.innerHTML = "";
-      selectedItems.forEach(item => {
-        let div = document.createElement("div");
-        div.classList.add("selected-item");
-        div.innerHTML = `${item} <span class="remove-btn" onclick="removeItem('${item}')">Remove</span>`;
-        container.appendChild(div);
-      });
+function sendEmail() {
+  const subject = "Customer Enquiry - Electrical Items";
+  const body = "I am interested in the following items:\n" + selectedItems.join("\n");
+  window.location.href = "mailto:krishnadsge@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+}
+</script>
 
-      let msg = "Hello, I am interested in the following items:%0A" + selectedItems.map(i => "- " + i).join("%0A");
-      document.getElementById("whatsappBtn").href = `https://wa.me/7483362854?text=${msg}`;
-      document.getElementById("emailBtn").href = `mailto:krishnadsge@gmail.com,vindoharsha21@gmail.com?subject=Customer Enquiry&body=${selectedItems.join("%0A")}`;
-    }
-
-    document.getElementById("searchInput").addEventListener("input", searchCatalog);
-
-    buildCatalog();
-  </script>
 </body>
 </html>
