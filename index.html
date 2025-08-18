@@ -1,227 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SAI GANESH ELECTRICALS - SSE</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-  :root{--ink:#222;--accent:#0d6efd}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fafafa}
-  header{background:#1f2937;color:#fff;padding:10px 16px;text-align:center;font-weight:700}
-  .wrap{max-width:900px;margin:18px auto;padding:0 14px}
-  .tagline{margin:8px 0 16px;font-size:14px;color:#555}
-  .row{display:flex;gap:10px;align-items:flex-start}
-  #searchBox{flex:1;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:8px}
-  #suggestions{position:relative;flex:1}
-  #suggestionsList{position:absolute;z-index:10;top:2px;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:220px;overflow:auto;display:none}
-  .sugg{padding:8px 10px;cursor:pointer}
-  .sugg:hover{background:#f4f7ff}
-  .mark{background:#fff59d}
-  #selected{border:1px solid #333;background:#fff;border-radius:10px;padding:10px;min-height:80px;margin-top:14px}
-  .selItem{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 10px;margin:6px 0}
-  .rm{background:#fff;border:1px solid #ef4444;color:#ef4444;padding:3px 8px;border-radius:6px;cursor:pointer}
-  .rm:hover{background:#fee2e2}
-  .contact{margin-top:16px;background:#111827;color:#e5e7eb;border-radius:12px;padding:16px}
-  .contact h2{margin:0 0 8px}
-  .btnRow{display:flex;gap:10px;margin-top:12px}
-  button{flex:1;padding:10px 12px;font-size:16px;border:none;border-radius:8px;cursor:pointer}
-  .wbtn{background:#25d366;color:#fff}
-  .ebtn{background:var(--accent);color:#fff}
-  form{margin-top:14px}
-  input,textarea{width:100%;padding:9px;border:1px solid #ccc;border-radius:8px;margin:6px 0}
-</style>
+  <meta charset="UTF-8">
+  <title>SAI GANESH ELECTRICALS - Catalog</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    header { background: #003366; color: white; padding: 10px; text-align: center; font-size: 20px; }
+    .contact { font-size: 14px; margin-top: 5px; }
+    .search-box { margin: 20px 0; text-align: center; }
+    input[type="text"] { width: 60%; padding: 10px; font-size: 16px; }
+    .dropdown { background: white; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; width: 60%; margin: auto; display: none; }
+    .dropdown div { padding: 8px; cursor: pointer; }
+    .dropdown div:hover { background: #e6f2ff; }
+    #selected { margin: 20px auto; width: 60%; background: #fff; border: 1px solid #ccc; padding: 10px; }
+    #selected h3 { margin-top: 0; }
+    .item { padding: 5px; margin: 5px 0; background: #eef; display: flex; justify-content: space-between; align-items: center; }
+    .item button { background: red; color: white; border: none; padding: 5px; cursor: pointer; }
+    form { margin: 20px auto; width: 60%; background: #fff; border: 1px solid #ccc; padding: 15px; }
+    form input, form textarea { width: 100%; margin: 8px 0; padding: 10px; }
+    form button { background: green; color: white; padding: 10px; border: none; cursor: pointer; }
+    form button:hover { background: darkgreen; }
+  </style>
 </head>
 <body>
-  <header>SAI GANESH ELECTRICALS - SSE</header>
 
-  <div class="wrap">
-    <p class="tagline"><strong>Categories:</strong> Wires & Cables • Conduit & Fittings • Fans & Appliances • Hardware • Lighting • Switchgear</p>
-
-    <div class="row">
-      <input id="searchBox" type="text" placeholder="Search your item…" autocomplete="off">
-      <div id="suggestions">
-        <div id="suggestionsList"></div>
-      </div>
-    </div>
-
-    <h3 style="margin:16px 0 8px">Selected Items</h3>
-    <div id="selected"></div>
-
-    <div class="contact">
-      <h2>SAI GANESH ELECTRICALS - SSE</h2>
-      <p><strong>Prop:</strong> Dasari Krishna &nbsp; | &nbsp; <strong>Phone:</strong> 9885750057</p>
-      <p><strong>Email:</strong> krishnadsge@gmail.com</p>
-      <p><strong>Sales Executive:</strong> Vinodharsha &nbsp; | &nbsp; <strong>Email:</strong> vinodharsha21@gmail.com &nbsp; | &nbsp; <strong>WhatsApp:</strong> 7483362854</p>
-      <p><em>“We may be stationary, but our reach is dynamic — always here to power your needs.”</em></p>
-    </div>
-
-    <h3 style="margin:16px 0 8px">Your Details</h3>
-    <form id="custForm">
-      <input id="custName" placeholder="Your Name" required>
-      <input id="custPhone" placeholder="Your Phone" required>
-      <input id="custEmail" type="email" placeholder="Your Email (optional)">
-      <textarea id="custMsg" rows="3" placeholder="Message (optional)"></textarea>
-    </form>
-
-    <div class="btnRow">
-      <button class="wbtn" onclick="sendWhatsApp()">Send via WhatsApp</button>
-      <button class="ebtn" onclick="sendEmail()">Send via Email</button>
-    </div>
+<header>
+  <div>SAI GANESH ELECTRICALS - SSE</div>
+  <div class="contact">
+    PROP: DASARI KRISHNA | PHONE: 9885750057 | EMAIL: krishnadsge@gmail.com <br>
+    SALES EXECUTIVE: VINODHARSHA | EMAIL: vinodharsha21@gmail.com | WHATSAPP: 7483362854
   </div>
+  <div><i>We may be stationary, but our reach is dynamic!</i></div>
+</header>
+
+<div class="search-box">
+  <input type="text" id="search" placeholder="Search for products (e.g. 1sqmm, fan, conduit)...">
+  <div class="dropdown" id="dropdown"></div>
+</div>
+
+<div id="selected">
+  <h3>Selected Items</h3>
+  <div id="selected-list"></div>
+</div>
+
+<form id="enquiry" action="https://formspree.io/f/xnnzygoz" method="POST">
+  <h3>Customer Enquiry Form</h3>
+  <input type="text" name="name" placeholder="Your Name" required>
+  <input type="email" name="_replyto" placeholder="Your Email" required>
+  <input type="text" name="phone" placeholder="Your Phone Number" required>
+  <textarea name="message" id="message" placeholder="Your Message (Selected items will be auto-added)" required></textarea>
+  <button type="submit">Send Enquiry</button>
+</form>
 
 <script>
-  // === Utilities ===
-  const norm = s => String(s).toLowerCase().replace(/\s+/g,''); // space-insensitive + case-insensitive
-  const byId = id => document.getElementById(id);
+  // Full inventory (imported separately)
+  const inventory = [
+    "1sqmm 90mtr Red Copper Wire",
+    "1sqmm 90mtr Blue Copper Wire",
+    "1sqmm 180mtr Black Copper Wire",
+    "1sqmm 300mtr Yellow Copper Wire",
+    "2.5sqmm 90mtr Green Copper Wire",
+    "Conduit Pipe 20mm",
+    "Conduit Pipe 25mm",
+    "Ceiling Fan 1200mm White",
+    "LED Bulb 9W",
+    "MCB 6A Single Pole",
+    "PVC Tape Red",
+    "Switch 6A 1 Way",
+    "Socket 16A 3 Pin"
+    // 👉 Replace this with all 903 items from your Excel export
+  ];
 
-  const searchBox = byId('searchBox');
-  const suggestionsList = byId('suggestionsList');
-  const selectedDiv = byId('selected');
+  const search = document.getElementById("search");
+  const dropdown = document.getElementById("dropdown");
+  const selectedList = document.getElementById("selected-list");
+  const messageBox = document.getElementById("message");
 
-  let allItems = [];          // full list from Excel(s) — duplicates kept
-  let selected = [];          // user-selected items (each click adds one)
+  let selectedItems = [];
 
-  // === Load items from one or more Excel files (duplicates preserved) ===
-  const excelFiles = ['cc.xlsx','SktGrpSum.xlsx','StkGrpSum.xlsx']; // tries each; ignores missing ones
-
-  async function loadExcel(url){
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('fetch fail');
-    const buf = await res.arrayBuffer();
-    const wb = XLSX.read(buf, {type:'array'});
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(ws, {defval:''}); // [{Item: "...", Category: "..."}]
-    // Try to find the "Item" column; fallback to first key
-    return json.flatMap(row=>{
-      const keys = Object.keys(row);
-      if(keys.length===0) return [];
-      const itemKey = keys.find(k => norm(k).includes('item')) || keys[0];
-      const val = String(row[itemKey] ?? '').trim();
-      return val ? [val] : [];
-    });
+  function normalize(text) {
+    return text.toLowerCase().replace(/\s+/g, "");
   }
 
-  (async function init(){
-    const results = await Promise.allSettled(excelFiles.map(loadExcel));
-    results.forEach(r => { if(r.status==='fulfilled'){ allItems = allItems.concat(r.value) } });
-    // If still empty (e.g., files not present), fallback to a tiny demo list (kept for resilience).
-    if(allItems.length===0){
-      allItems = [
-        '1.5 sqmm Copper Wire FR 90m',
-        '1.5sqmm Copper Wire Blue 100m',
-        '2.5 sqmm Copper Wire Red 100m',
-        '4 sqmm Copper Wire Black 90m',
-        '4sqmm Copper Wire Blue 90m',
-        '4 sqmm Copper Wire FRLS 100m',
-        'PVC Conduit 25mm',
-        'MCB 6A 1P',
-        'LED Bulb 9W'
-      ];
+  search.addEventListener("input", function() {
+    const query = normalize(this.value);
+    dropdown.innerHTML = "";
+    if (!query) { dropdown.style.display = "none"; return; }
+
+    const results = inventory.filter(item => normalize(item).includes(query));
+    if (results.length === 0) {
+      dropdown.style.display = "none";
+      return;
     }
-  })();
 
-  // === Search + suggestions (keeps duplicates) ===
-  searchBox.addEventListener('input', () => {
-    const q = norm(searchBox.value);
-    suggestionsList.innerHTML = '';
-    if(!q){ suggestionsList.style.display='none'; return; }
-
-    // filter while preserving order and duplicates
-    const matches = allItems.filter(it => norm(it).includes(q)).slice(0,200); // safety cap
-    if(matches.length===0){ suggestionsList.style.display='none'; return; }
-
-    matches.forEach(it=>{
-      const div = document.createElement('div');
-      div.className = 'sugg';
-      // highlight the matching part
-      const nIt = it;
-      const idx = norm(it).indexOf(q);
-      if(idx>-1){
-        // rebuild with mark based on original string positions
-        // approximate mapping by removing spaces only; this is good enough for sqmm vs sq mm cases
-        const plain = it;
-        const compact = norm(plain);
-        const startInCompact = idx, endInCompact = idx+q.length;
-        // map compact index back to original positions
-        const map = [];
-        for(let i=0,c=0;i<plain.length;i++){ if(plain[i]!==' ') map[c++]=i; }
-        const s = map[startInCompact] ?? 0;
-        const e = (map[endInCompact-1] ?? (plain.length-1)) + 1;
-        div.innerHTML = plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
-      } else {
-        div.textContent = nIt;
-      }
-      div.onclick = ()=> addItem(it);
-      suggestionsList.appendChild(div);
+    results.forEach(item => {
+      const div = document.createElement("div");
+      div.textContent = item;
+      div.onclick = () => addItem(item);
+      dropdown.appendChild(div);
     });
-    suggestionsList.style.display = 'block';
+
+    dropdown.style.display = "block";
   });
 
-  function addItem(it){
-    // add exactly what user clicked; allow duplicates in selection too
-    selected.push(it);
-    renderSelected();
-    suggestionsList.style.display='none';
-    searchBox.value='';
-    searchBox.focus();
+  function addItem(item) {
+    if (!selectedItems.includes(item)) {
+      selectedItems.push(item);
+      renderSelected();
+    }
+    dropdown.style.display = "none";
+    search.value = "";
   }
 
-  function renderSelected(){
-    selectedDiv.innerHTML='';
-    selected.forEach((it,idx)=>{
-      const row = document.createElement('div');
-      row.className='selItem';
-      row.innerHTML = `<span>${it}</span><button class="rm" onclick="removeSel(${idx})">Remove</button>`;
-      selectedDiv.appendChild(row);
+  function removeItem(item) {
+    selectedItems = selectedItems.filter(i => i !== item);
+    renderSelected();
+  }
+
+  function renderSelected() {
+    selectedList.innerHTML = "";
+    selectedItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `${item} <button onclick="removeItem('${item}')">Remove</button>`;
+      selectedList.appendChild(div);
     });
-  }
-
-  function removeSel(i){
-    selected.splice(i,1);
-    renderSelected();
-  }
-
-  function collectDetails(){
-    const name = byId('custName').value.trim();
-    const phone = byId('custPhone').value.trim();
-    const email = byId('custEmail').value.trim();
-    const msg   = byId('custMsg').value.trim();
-    if(!name || !phone){ alert('Please fill Name and Phone'); return null; }
-    return {name,phone,email,msg};
-  }
-
-  function sendWhatsApp(){
-    const d = collectDetails(); if(!d) return;
-    const text =
-`Customer Enquiry - Electrical Items
-Items:
-• ${selected.join('\n• ')}
-
-Customer:
-Name: ${d.name}
-Phone: ${d.phone}
-Email: ${d.email}
-Message: ${d.msg}`;
-    const url = 'https://wa.me/917483362854?text=' + encodeURIComponent(text);
-    window.open(url,'_blank');
-  }
-
-  function sendEmail(){
-    const d = collectDetails(); if(!d) return;
-    const subject = 'Customer Enquiry - Electrical Items';
-    const body =
-`Items:
-• ${selected.join('\n• ')}
-
-Customer:
-Name: ${d.name}
-Phone: ${d.phone}
-Email: ${d.email}
-Message: ${d.msg}`;
-    window.location.href = `mailto:vinodharsha21@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    messageBox.value = "Customer selected items:\n" + selectedItems.join("\n");
   }
 </script>
+
 </body>
 </html>
