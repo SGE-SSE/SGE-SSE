@@ -52,18 +52,18 @@
   </div>
 
   <!-- Customer Form -->
-  <form id="custForm" onsubmit="return false;">
+  <form id="custForm" action="https://formspree.io/f/xnnzygoz" method="POST">
     <label for="custName">Your Name *</label>
-    <input id="custName" type="text" required>
+    <input id="custName" name="name" type="text" required>
 
     <label for="custPhone">Phone *</label>
-    <input id="custPhone" type="text" required>
+    <input id="custPhone" name="phone" type="text" required>
 
     <label for="custEmail">Email</label>
-    <input id="custEmail" type="email">
+    <input id="custEmail" name="email" type="email">
 
     <label for="custMsg">Message</label>
-    <textarea id="custMsg"></textarea>
+    <textarea id="custMsg" name="message"></textarea>
 
     <input type="hidden" name="selected_items" id="selected_items_field">
 
@@ -80,8 +80,7 @@
     // Config
     // --------------------------
     const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
-    const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
-    const EMAIL_TO = 'vinodharsha21@gmail.com';
+    const WHATSAPP_NUMBER_IN = '917483362854';
 
     // --------------------------
     // Helpers
@@ -140,6 +139,7 @@
     const dropdown = $('dropdown');
     const selectedList = $('selectedList');
     const hiddenSelectedField = $('selected_items_field');
+    const form = $('custForm');
 
     search.addEventListener('input', () => {
       const q = normalize(search.value);
@@ -212,6 +212,11 @@ Message: ${d.msg}`;
       const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
       window.open(url, '_blank');
     }
+
+    // inject items into form before submit
+    form.addEventListener('submit', (e) => {
+      renderSelected();
+    });
 
     window.removeItem = removeItem;
     window.sendWhatsApp = sendWhatsApp;
