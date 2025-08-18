@@ -2,132 +2,220 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SAI GANESH ELECTRICALS - Catalog</title>
+  <title>SAI GANESH ELECTRICALS - SSE</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    header { background: #003366; color: white; padding: 10px; text-align: center; font-size: 20px; }
-    .contact { font-size: 14px; margin-top: 5px; }
-    .search-box { margin: 20px 0; text-align: center; }
-    input[type="text"] { width: 60%; padding: 10px; font-size: 16px; }
-    .dropdown { background: white; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; width: 60%; margin: auto; display: none; }
-    .dropdown div { padding: 8px; cursor: pointer; }
-    .dropdown div:hover { background: #e6f2ff; }
-    #selected { margin: 20px auto; width: 60%; background: #fff; border: 1px solid #ccc; padding: 10px; }
-    #selected h3 { margin-top: 0; }
-    .item { padding: 5px; margin: 5px 0; background: #eef; display: flex; justify-content: space-between; align-items: center; }
-    .item button { background: red; color: white; border: none; padding: 5px; cursor: pointer; }
-    form { margin: 20px auto; width: 60%; background: #fff; border: 1px solid #ccc; padding: 15px; }
-    form input, form textarea { width: 100%; margin: 8px 0; padding: 10px; }
-    form button { background: green; color: white; padding: 10px; border: none; cursor: pointer; }
-    form button:hover { background: darkgreen; }
+    body { font-family: Arial, sans-serif; margin:20px; background:#f9f9f9; }
+    h1 { font-size:22px; margin:5px 0; }
+    .header { border-bottom:2px solid #333; padding-bottom:8px; margin-bottom:15px; }
+    .contact { font-size:14px; line-height:1.5; }
+    .search-box { margin:15px 0; }
+    #search { width:100%; padding:8px; font-size:14px; }
+    #dropdown { border:1px solid #ccc; display:none; max-height:200px; overflow-y:auto; background:#fff; position:absolute; width:90%; z-index:100; }
+    .opt { padding:6px; cursor:pointer; }
+    .opt:hover { background:#eee; }
+    .mark { background:yellow; }
+    .selected { margin-top:15px; padding:10px; border:1px solid #ccc; background:#fff; }
+    .si { margin:5px 0; display:flex; justify-content:space-between; align-items:center; }
+    .rm { background:red; color:#fff; border:none; padding:2px 6px; cursor:pointer; border-radius:4px; }
+    form { margin-top:20px; padding:10px; background:#fff; border:1px solid #ccc; }
+    label { display:block; margin:6px 0 3px; font-weight:bold; }
+    input, textarea { width:100%; padding:6px; margin-bottom:8px; }
+    button { margin:5px 5px 0 0; padding:8px 14px; cursor:pointer; border-radius:4px; border:none; }
+    .btn-wa { background:#25D366; color:#fff; }
+    .btn-email { background:#0072C6; color:#fff; }
   </style>
 </head>
 <body>
-
-<header>
-  <div>SAI GANESH ELECTRICALS - SSE</div>
-  <div class="contact">
-    PROP: DASARI KRISHNA | PHONE: 9885750057 | EMAIL: krishnadsge@gmail.com <br>
-    SALES EXECUTIVE: VINODHARSHA | EMAIL: vinodharsha21@gmail.com | WHATSAPP: 7483362854
+  <div class="header">
+    <h1>SAI GANESH ELECTRICALS - SSE</h1>
+    <div class="contact">
+      <div>PROP: DASARI KRISHNA</div>
+      <div>Phone: 9885750057</div>
+      <div>Email: krishnadsge@gmail.com</div>
+      <div>Sales Executive: VINODHARSHA</div>
+      <div>Email: vinodharsha21@gmail.com</div>
+      <div>WhatsApp: 7483362854</div>
+      <div><em>“We may be stationary, but our reach is dynamic.”</em></div>
+    </div>
   </div>
-  <div><i>We may be stationary, but our reach is dynamic!</i></div>
-</header>
 
-<div class="search-box">
-  <input type="text" id="search" placeholder="Search for products (e.g. 1sqmm, fan, conduit)...">
-  <div class="dropdown" id="dropdown"></div>
-</div>
+  <!-- Search -->
+  <div class="search-box">
+    <input id="search" type="text" placeholder="Search items (e.g. 1sqmm, 4 sqmm wire)">
+    <div id="dropdown"></div>
+  </div>
 
-<div id="selected">
-  <h3>Selected Items</h3>
-  <div id="selected-list"></div>
-</div>
+  <!-- Selected Items -->
+  <div class="selected">
+    <h3>Selected Items</h3>
+    <div id="selectedList"></div>
+  </div>
 
-<form id="enquiry" action="https://formspree.io/f/xnnzygoz" method="POST">
-  <h3>Customer Enquiry Form</h3>
-  <input type="text" name="name" placeholder="Your Name" required>
-  <input type="email" name="_replyto" placeholder="Your Email" required>
-  <input type="text" name="phone" placeholder="Your Phone Number" required>
-  <textarea name="message" id="message" placeholder="Your Message (Selected items will be auto-added)" required></textarea>
-  <button type="submit">Send Enquiry</button>
-</form>
+  <!-- Customer Form -->
+  <form id="custForm" onsubmit="return false;">
+    <label for="custName">Your Name *</label>
+    <input id="custName" type="text" required>
 
-<script>
-  // Full inventory (imported separately)
-  const inventory = [
-    "1sqmm 90mtr Red Copper Wire",
-    "1sqmm 90mtr Blue Copper Wire",
-    "1sqmm 180mtr Black Copper Wire",
-    "1sqmm 300mtr Yellow Copper Wire",
-    "2.5sqmm 90mtr Green Copper Wire",
-    "Conduit Pipe 20mm",
-    "Conduit Pipe 25mm",
-    "Ceiling Fan 1200mm White",
-    "LED Bulb 9W",
-    "MCB 6A Single Pole",
-    "PVC Tape Red",
-    "Switch 6A 1 Way",
-    "Socket 16A 3 Pin"
-    // 👉 Replace this with all 903 items from your Excel export
-  ];
+    <label for="custPhone">Phone *</label>
+    <input id="custPhone" type="text" required>
 
-  const search = document.getElementById("search");
-  const dropdown = document.getElementById("dropdown");
-  const selectedList = document.getElementById("selected-list");
-  const messageBox = document.getElementById("message");
+    <label for="custEmail">Email</label>
+    <input id="custEmail" type="email">
 
-  let selectedItems = [];
+    <label for="custMsg">Message</label>
+    <textarea id="custMsg"></textarea>
 
-  function normalize(text) {
-    return text.toLowerCase().replace(/\s+/g, "");
-  }
+    <input type="hidden" name="selected_items" id="selected_items_field">
 
-  search.addEventListener("input", function() {
-    const query = normalize(this.value);
-    dropdown.innerHTML = "";
-    if (!query) { dropdown.style.display = "none"; return; }
+    <button type="button" class="btn-wa" onclick="sendWhatsApp()">Send via WhatsApp</button>
+    <button type="submit" class="btn-email">Send via Email</button>
+  </form>
 
-    const results = inventory.filter(item => normalize(item).includes(query));
-    if (results.length === 0) {
-      dropdown.style.display = "none";
-      return;
+  <!-- Include XLSX Library -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <!-- Main Script -->
+  <script>
+    // --------------------------
+    // Config
+    // --------------------------
+    const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
+    const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
+    const EMAIL_TO = 'vinodharsha21@gmail.com';
+
+    // --------------------------
+    // Helpers
+    // --------------------------
+    const $ = id => document.getElementById(id);
+    function normalize(s){
+      return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
+    }
+    function highlightMatch(original, qNorm){
+      const plain = String(original);
+      const compact = normalize(plain);
+      const idx = compact.indexOf(qNorm);
+      if(idx < 0) return plain;
+
+      const map = [];
+      for(let i=0,c=0;i<plain.length;i++){
+        const ch = plain[i];
+        if(!/[\s.\-_/]/.test(ch)){ map[c++] = i; }
+      }
+      const s = map[idx] ?? 0;
+      const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
+      return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
     }
 
-    results.forEach(item => {
-      const div = document.createElement("div");
-      div.textContent = item;
-      div.onclick = () => addItem(item);
-      dropdown.appendChild(div);
+    // --------------------------
+    // Data
+    // --------------------------
+    let ALL_ITEMS = [];
+    let selected = [];
+
+    async function loadExcelItems(){
+      try{
+        const res = await fetch(EXCEL_FILE, {cache:'no-store'});
+        if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
+        const buf = await res.arrayBuffer();
+        const wb = XLSX.read(buf, {type:'array'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+
+        const items = [];
+        for(const r of rows){
+          const val = (r['Item'] ?? '').toString().trim();
+          if(val) items.push(val);
+        }
+        ALL_ITEMS = items;
+      }catch(err){
+        console.error('Excel load error:', err);
+        ALL_ITEMS = ['Fallback Item A','Fallback Item B'];
+      }
+    }
+
+    // --------------------------
+    // UI Logic
+    // --------------------------
+    const search = $('search');
+    const dropdown = $('dropdown');
+    const selectedList = $('selectedList');
+    const hiddenSelectedField = $('selected_items_field');
+
+    search.addEventListener('input', () => {
+      const q = normalize(search.value);
+      dropdown.innerHTML = '';
+      if(!q){ dropdown.style.display='none'; return; }
+
+      const results = ALL_ITEMS.filter(it => normalize(it).includes(q)).slice(0,300);
+      if(results.length === 0){ dropdown.style.display='none'; return; }
+
+      results.forEach(it=>{
+        const div = document.createElement('div');
+        div.className = 'opt';
+        div.innerHTML = highlightMatch(it, q);
+        div.onclick = ()=> addItem(it);
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = 'block';
     });
 
-    dropdown.style.display = "block";
-  });
-
-  function addItem(item) {
-    if (!selectedItems.includes(item)) {
-      selectedItems.push(item);
+    function addItem(item){
+      selected.push(item);
+      renderSelected();
+      dropdown.style.display='none';
+      search.value='';
+      search.focus();
+    }
+    function removeItem(idx){
+      selected.splice(idx,1);
       renderSelected();
     }
-    dropdown.style.display = "none";
-    search.value = "";
-  }
+    function renderSelected(){
+      selectedList.innerHTML = '';
+      selected.forEach((it, i)=>{
+        const row = document.createElement('div');
+        row.className = 'si';
+        row.innerHTML = `<span>${it}</span><button class="rm" onclick="removeItem(${i})">Remove</button>`;
+        selectedList.appendChild(row);
+      });
+      hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.join('\n• ')}` : '';
+    }
 
-  function removeItem(item) {
-    selectedItems = selectedItems.filter(i => i !== item);
-    renderSelected();
-  }
+    // --------------------------
+    // Send actions
+    // --------------------------
+    function collectCustomer(){
+      const name = $('custName').value.trim();
+      const phone = $('custPhone').value.trim();
+      const email = $('custEmail').value.trim();
+      const msg = $('custMsg').value.trim();
+      if(!name || !phone){
+        alert('Please fill your Name and Phone.');
+        return null;
+      }
+      return {name, phone, email, msg};
+    }
 
-  function renderSelected() {
-    selectedList.innerHTML = "";
-    selectedItems.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `${item} <button onclick="removeItem('${item}')">Remove</button>`;
-      selectedList.appendChild(div);
-    });
-    messageBox.value = "Customer selected items:\n" + selectedItems.join("\n");
-  }
-</script>
+    function sendWhatsApp(){
+      const d = collectCustomer(); if(!d) return;
+      const text =
+`Customer Enquiry - Electrical Items
 
+Items:
+• ${selected.join('\n• ')}
+
+Customer:
+Name: ${d.name}
+Phone: ${d.phone}
+Email: ${d.email}
+Message: ${d.msg}`;
+      const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    }
+
+    window.removeItem = removeItem;
+    window.sendWhatsApp = sendWhatsApp;
+    loadExcelItems();
+  </script>
 </body>
 </html>
