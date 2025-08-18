@@ -3,84 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <title>SAI GANESH ELECTRICALS - SSE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin:20px; background:#f9f9f9; }
-    h1 { font-size:22px; margin:5px 0; }
-    .header { border-bottom:2px solid #333; padding-bottom:8px; margin-bottom:15px; }
-    .contact { font-size:14px; line-height:1.5; }
-    .search-box { margin:15px 0; }
-    #search { width:100%; padding:8px; font-size:14px; }
-    #dropdown { border:1px solid #ccc; display:none; max-height:200px; overflow-y:auto; background:#fff; position:absolute; width:90%; z-index:100; }
+    body { font-family: Arial, sans-serif; margin:20px; }
+    h1 { font-size:22px; margin-bottom:4px; }
+    h2 { font-size:16px; margin-top:0; font-weight:normal; color:#444; }
+    .searchbox { margin:15px 0; }
+    #search { width:100%; padding:8px; font-size:16px; }
+    #dropdown { border:1px solid #ccc; display:none; max-height:200px; overflow-y:auto; position:absolute; background:#fff; width:90%; z-index:10; }
     .opt { padding:6px; cursor:pointer; }
     .opt:hover { background:#eee; }
     .mark { background:yellow; }
-    .selected { margin-top:15px; padding:10px; border:1px solid #ccc; background:#fff; }
-    .si { margin:5px 0; display:flex; justify-content:space-between; align-items:center; }
-    .rm { background:red; color:#fff; border:none; padding:2px 6px; cursor:pointer; border-radius:4px; }
-    form { margin-top:20px; padding:10px; background:#fff; border:1px solid #ccc; }
-    label { display:block; margin:6px 0 3px; font-weight:bold; }
-    input, textarea { width:100%; padding:6px; margin-bottom:8px; }
-    button { margin:5px 5px 0 0; padding:8px 14px; cursor:pointer; border-radius:4px; border:none; }
-    .btn-wa { background:#25D366; color:#fff; }
-    .btn-email { background:#0072C6; color:#fff; }
+    .si { margin:5px 0; padding:6px; background:#f8f8f8; border:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; }
+    .rm { margin-left:10px; background:red; color:#fff; border:none; cursor:pointer; padding:3px 8px; }
+    .btn-wa { background:#25D366; color:#fff; padding:8px 12px; border:none; cursor:pointer; }
+    .btn-email { background:#007BFF; color:#fff; padding:8px 12px; border:none; cursor:pointer; margin-left:10px; }
+    #statusMsg { margin-top:15px; font-weight:bold; }
+    .success { color:green; }
+    .error { color:red; }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>SAI GANESH ELECTRICALS - SSE</h1>
-    <div class="contact">
-      <div>PROP: DASARI KRISHNA</div>
-      <div>Phone: 9885750057</div>
-      <div>Email: krishnadsge@gmail.com</div>
-      <div>Sales Executive: VINODHARSHA</div>
-      <div>Email: vinodharsha21@gmail.com</div>
-      <div>WhatsApp: 7483362854</div>
-      <div><em>“We may be stationary, but our reach is dynamic.”</em></div>
-    </div>
-  </div>
+
+  <!-- Header -->
+  <h1>SAI GANESH ELECTRICALS - SSE</h1>
+  <h2>
+    PROP: DASARI KRISHNA<br>
+    Phone: 9885750057 | Email: krishnadsge@gmail.com<br>
+    Sales Executive: VINODHARSHA | Email: vinodharsha21@gmail.com | WhatsApp: 7483362854<br>
+    <em>We may be stationary, but our reach is dynamic!</em>
+  </h2>
 
   <!-- Search -->
-  <div class="search-box">
-    <input id="search" type="text" placeholder="Search items (e.g. 1sqmm, 4 sqmm wire)">
+  <div class="searchbox">
+    <input id="search" type="text" placeholder="Search items (e.g. 1sqmm, 4sqmm)...">
     <div id="dropdown"></div>
   </div>
 
   <!-- Selected Items -->
-  <div class="selected">
-    <h3>Selected Items</h3>
-    <div id="selectedList"></div>
-  </div>
+  <h3>Selected Items</h3>
+  <div id="selectedList"></div>
 
   <!-- Customer Form -->
-  <form id="custForm" action="https://formspree.io/f/xnnzygoz" method="POST">
-    <label for="custName">Your Name *</label>
-    <input id="custName" name="name" type="text" required>
+  <h3>Customer Details</h3>
+  <form id="custForm">
+    <label for="custName">Your Name *</label><br>
+    <input id="custName" name="name" type="text" required><br><br>
 
-    <label for="custPhone">Phone *</label>
-    <input id="custPhone" name="phone" type="text" required>
+    <label for="custPhone">Phone *</label><br>
+    <input id="custPhone" name="phone" type="text" required><br><br>
 
-    <label for="custEmail">Email</label>
-    <input id="custEmail" name="email" type="email">
+    <label for="custEmail">Email</label><br>
+    <input id="custEmail" name="email" type="email"><br><br>
 
-    <label for="custMsg">Message</label>
-    <textarea id="custMsg" name="message"></textarea>
+    <label for="custMsg">Message</label><br>
+    <textarea id="custMsg" name="message"></textarea><br><br>
 
     <input type="hidden" name="selected_items" id="selected_items_field">
 
     <button type="button" class="btn-wa" onclick="sendWhatsApp()">Send via WhatsApp</button>
-    <button type="submit" class="btn-email">Send via Email</button>
+    <button type="button" class="btn-email" onclick="sendEmail()">Send via Email</button>
   </form>
 
-  <!-- Include XLSX Library -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <!-- Status Message -->
+  <div id="statusMsg"></div>
 
-  <!-- Main Script -->
   <script>
     // --------------------------
     // Config
     // --------------------------
-    const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
+    const EXCEL_FILE = 'cc.xlsx';
     const WHATSAPP_NUMBER_IN = '917483362854';
+    const FORMSPREE_URL = 'https://formspree.io/f/xnnzygoz';
 
     // --------------------------
     // Helpers
@@ -139,7 +133,7 @@
     const dropdown = $('dropdown');
     const selectedList = $('selectedList');
     const hiddenSelectedField = $('selected_items_field');
-    const form = $('custForm');
+    const statusMsg = $('statusMsg');
 
     search.addEventListener('input', () => {
       const q = normalize(search.value);
@@ -190,10 +184,15 @@
       const email = $('custEmail').value.trim();
       const msg = $('custMsg').value.trim();
       if(!name || !phone){
-        alert('Please fill your Name and Phone.');
+        showStatus("Please fill your Name and Phone.", "error");
         return null;
       }
       return {name, phone, email, msg};
+    }
+
+    function showStatus(text, type){
+      statusMsg.textContent = text;
+      statusMsg.className = type;
     }
 
     function sendWhatsApp(){
@@ -211,15 +210,43 @@ Email: ${d.email}
 Message: ${d.msg}`;
       const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
       window.open(url, '_blank');
+      showStatus("✅ WhatsApp window opened. Please send the message.", "success");
     }
 
-    // inject items into form before submit
-    form.addEventListener('submit', (e) => {
+    async function sendEmail(){
       renderSelected();
-    });
+      const d = collectCustomer();
+      if(!d) return;
+
+      const formData = new FormData();
+      formData.append("name", d.name);
+      formData.append("phone", d.phone);
+      formData.append("email", d.email);
+      formData.append("message", d.msg);
+      formData.append("selected_items", selected.length ? selected.join(", ") : "No items");
+
+      try {
+        const res = await fetch(FORMSPREE_URL, {
+          method: "POST",
+          body: formData,
+          headers: { "Accept": "application/json" }
+        });
+        if(res.ok){
+          showStatus("✅ Email enquiry sent successfully!", "success");
+          $('custForm').reset();
+          selected = [];
+          renderSelected();
+        } else {
+          showStatus("❌ Failed to send email. Please try again.", "error");
+        }
+      } catch(err){
+        showStatus("❌ Error: " + err.message, "error");
+      }
+    }
 
     window.removeItem = removeItem;
     window.sendWhatsApp = sendWhatsApp;
+    window.sendEmail = sendEmail;
     loadExcelItems();
   </script>
 </body>
