@@ -18,6 +18,7 @@
     .btn { margin: 8px; padding: 10px 15px; background: green; color: #fff; border:none; border-radius:5px; cursor:pointer; }
     .btn:hover { opacity:0.9; }
     .form-group { margin: 10px 0; }
+    #status { text-align:center; font-weight:bold; margin-top:10px; }
   </style>
 </head>
 <body>
@@ -25,9 +26,9 @@
   <h1>SAI GANESH ELECTRICALS - SSE</h1>
   <div class="company-info">
     <p><strong>PROP:</strong> DASARI KRISHNA</p>
+    <p>📞 9885750057 | ✉️ krishnadsge@gmail.com</p>
     <p><strong>Sales Executive:</strong> VINODHARSHA (📧 vinodharsha21@gmail.com)</p>
-    <p><strong>Phone:</strong> 9885750057 | <strong>WhatsApp:</strong> 7483362854</p>
-    <p><strong>Email:</strong> krishnadsge@gmail.com</p>
+    <p><strong>WhatsApp:</strong> 7483362854</p>
     <p><em>We may be stationary, but our reach is dynamic.</em></p>
   </div>
 
@@ -40,7 +41,7 @@
   <div id="selectedList"></div>
 
   <h3>Your Details</h3>
-  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
+  <form id="enquiryForm">
     <div class="form-group"><input type="text" id="custName" name="name" placeholder="Your Name" required></div>
     <div class="form-group"><input type="text" id="custPhone" name="phone" placeholder="Phone Number" required></div>
     <div class="form-group"><input type="email" id="custEmail" name="email" placeholder="Email"></div>
@@ -49,22 +50,21 @@
     <button type="submit" class="btn">Send via Email</button>
     <button type="button" class="btn" onclick="sendWhatsApp()">Send via WhatsApp</button>
   </form>
+  <div id="status"></div>
 
   <script>
     const EXCEL_FILE = 'cc.xlsx';
     const WHATSAPP_NUMBER_IN = '917483362854';
+    const FORMSPREE_URL = 'https://formspree.io/f/xnnzygoz';
 
     const $ = id => document.getElementById(id);
-    function normalize(s){
-      return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
-    }
+    function normalize(s){ return String(s).toLowerCase().replace(/[\s.\-_/]+/g,''); }
 
     function highlightMatch(original, qNorm){
       const plain = String(original);
       const compact = normalize(plain);
       const idx = compact.indexOf(qNorm);
       if(idx < 0) return plain;
-
       const map = [];
       for(let i=0,c=0;i<plain.length;i++){
         const ch = plain[i];
@@ -85,8 +85,7 @@
         const buf = await res.arrayBuffer();
         const wb = XLSX.read(buf, {type:'array'});
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, {defval:''}); // {Item, Category, Unit}
-
+        const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
         const items = [];
         for(const r of rows){
           const val = (r['Item'] ?? '').toString().trim();
@@ -109,10 +108,8 @@
       const q = normalize(search.value);
       dropdown.innerHTML = '';
       if(!q){ dropdown.style.display='none'; return; }
-
       const results = ALL_ITEMS.filter(it => normalize(it.name).includes(q)).slice(0,300);
       if(results.length === 0){ dropdown.style.display='none'; return; }
-
       results.forEach(it=>{
         const div = document.createElement('div');
         div.className = 'opt';
@@ -175,6 +172,33 @@ Message: ${d.msg}`;
       const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
       window.open(url, '_blank');
     }
+
+    // Formspree AJAX submission
+    const form = $('enquiryForm');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const d = collectCustomer(); if(!d) return;
+      const formData = new FormData(form);
+      formData.set("selected_items", hiddenSelectedField.value);
+
+      try {
+        const res = await fetch(FORMSPREE_URL, {
+          method: "POST",
+          body: formData,
+          headers: { "Accept": "application/json" }
+        });
+        if (res.ok) {
+          $('status').innerText = "✅ Enquiry submitted successfully!";
+          form.reset();
+          selected = [];
+          renderSelected();
+        } else {
+          $('status').innerText = "❌ Submission failed. Try again.";
+        }
+      } catch(err){
+        $('status').innerText = "❌ Network error. Try again.";
+      }
+    });
 
     window.removeItem = removeItem;
     window.sendWhatsApp = sendWhatsApp;
