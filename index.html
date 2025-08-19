@@ -2,214 +2,206 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Electrical Store Enquiry</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <title>SAI GANESH ELECTRICALS-SSE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    #search { width: 300px; padding: 8px; }
-    #dropdown { border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto; width: 300px; background: #fff; position: absolute; z-index: 1000; }
-    .opt { padding: 5px; cursor: pointer; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    h2 { font-size: 18px; margin-top: 0; }
+    .contact { margin-bottom: 15px; font-size: 14px; }
+    #search { width: 100%; padding: 8px; font-size: 14px; }
+    #dropdown { border: 1px solid #ccc; max-height: 180px; overflow-y: auto; display: none; position: absolute; background: #fff; width: calc(100% - 20px); z-index: 1000; }
+    .opt { padding: 6px; cursor: pointer; }
     .opt:hover { background: #f0f0f0; }
     .mark { background: yellow; }
-    .si { margin: 5px 0; padding: 5px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
-    .rm { margin-left: 10px; cursor: pointer; }
-    #selectedList { margin-top: 10px; }
-    .btn { padding: 10px 15px; margin: 5px; border: none; background: green; color: white; cursor: pointer; border-radius: 4px; }
-    .btn.email { background: #0073e6; }
+    #selectedList { margin-top: 15px; }
+    .si { padding: 6px; background: #eef; margin-bottom: 5px; border-radius: 4px; }
+    .rm { margin-left: 10px; }
+    button { margin-top: 8px; padding: 8px 14px; cursor: pointer; }
     form { margin-top: 20px; }
-    input, textarea { display: block; margin: 5px 0 15px; padding: 8px; width: 300px; }
+    form input, form textarea { display: block; width: 100%; margin-bottom: 10px; padding: 6px; }
   </style>
 </head>
 <body>
+  <h1>SAI GANESH ELECTRICALS-SSE</h1>
+  <div class="contact">
+    <strong>PROP:</strong> Dasari Krishna<br>
+    <strong>Phone:</strong> 9885750057<br>
+    <strong>Email:</strong> krishnadsge@gmail.com<br>
+    <strong>Sales Executive:</strong> Vinodharsha<br>
+    <strong>Email:</strong> vinodharsha21@gmail.com<br>
+    <strong>WhatsApp:</strong> 7483362854<br>
+    <em>We may be stationary, but our reach is dynamic.</em>
+  </div>
 
-  <h2>Electrical Store Enquiry</h2>
-
-  <input id="search" type="text" placeholder="Search item...">
+  <h2>Search Items</h2>
+  <input id="search" placeholder="Type to search (e.g. 1sqmm, switch, etc.)">
   <div id="dropdown"></div>
 
-  <h3>Selected Items</h3>
+  <h2>Selected Items</h2>
   <div id="selectedList"></div>
 
-  <form id="enquiryForm">
-    <input id="custName" placeholder="Your Name" required>
-    <input id="custPhone" placeholder="Phone Number" required>
-    <input id="custEmail" placeholder="Email">
-    <textarea id="custMsg" placeholder="Message"></textarea>
-    <input type="hidden" id="selected_items_field" name="selected_items">
+  <!-- Hidden field to pass selected items into form -->
+  <form id="emailForm" action="https://formspree.io/f/mnnadqge" method="POST" target="_blank">
+    <input type="hidden" name="selected_items" id="selected_items_field">
+
+    <input type="text" id="custName" name="name" placeholder="Your Name" required>
+    <input type="text" id="custPhone" name="phone" placeholder="Your Phone" required>
+    <input type="email" id="custEmail" name="email" placeholder="Your Email">
+    <textarea id="custMsg" name="message" placeholder="Additional message"></textarea>
+
+    <button type="submit">Send via Email</button>
+    <button type="button" onclick="sendWhatsApp()">Send via WhatsApp</button>
   </form>
 
-  <button class="btn" onclick="sendWhatsApp()">Send via WhatsApp</button>
-  <button class="btn email" onclick="sendEmail()">Send via Email</button>
+  <script>
+    // --------------------------
+    // Config
+    // --------------------------
+    const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
+    const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
 
-<script>
-  // --------------------------
-  // Config
-  // --------------------------
-  const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
-  const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
-  const EMAIL_TO = 'vinodharsha21@gmail.com';
-
-  // --------------------------
-  // Helpers
-  // --------------------------
-  const $ = id => document.getElementById(id);
-  function normalize(s){
-    return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
-  }
-  function highlightMatch(original, qNorm){
-    const plain = String(original);
-    const compact = normalize(plain);
-    const idx = compact.indexOf(qNorm);
-    if(idx < 0) return plain;
-    const map = [];
-    for(let i=0,c=0;i<plain.length;i++){
-      const ch = plain[i];
-      if(!/[\s.\-_/]/.test(ch)){ map[c++] = i; }
+    // --------------------------
+    // Helpers
+    // --------------------------
+    const $ = id => document.getElementById(id);
+    function normalize(s){
+      return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
     }
-    const s = map[idx] ?? 0;
-    const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
-    return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
-  }
+    function highlightMatch(original, qNorm){
+      const plain = String(original);
+      const compact = normalize(plain);
+      const idx = compact.indexOf(qNorm);
+      if(idx < 0) return plain;
 
-  // --------------------------
-  // Data
-  // --------------------------
-  let ALL_ITEMS = [];
-  let selected = [];
-
-  // Load Excel
-  async function loadExcelItems(){
-    try{
-      const res = await fetch(EXCEL_FILE, {cache:'no-store'});
-      if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
-      const buf = await res.arrayBuffer();
-      const wb = XLSX.read(buf, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-
-      ALL_ITEMS = rows.map(r => ({
-        item: (r['Item'] || r['item'] || '').toString().trim(),
-        category: (r['Category'] || r['category'] || '').toString().trim(),
-        unit: (r['Unit'] || r['unit'] || '').toString().trim()
-      })).filter(r => r.item);
-    }catch(err){
-      console.error('Excel load error:', err);
-      ALL_ITEMS = [{item:'Fallback Item A', category:'General', unit:''}];
+      const map = [];
+      for(let i=0,c=0;i<plain.length;i++){
+        const ch = plain[i];
+        if(!/[\s.\-_/]/.test(ch)){ map[c++] = i; }
+      }
+      const s = map[idx] ?? 0;
+      const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
+      return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
     }
-  }
 
-  // --------------------------
-  // UI Logic
-  // --------------------------
-  const search = $('search');
-  const dropdown = $('dropdown');
-  const selectedList = $('selectedList');
-  const hiddenSelectedField = $('selected_items_field');
+    // --------------------------
+    // Data
+    // --------------------------
+    let ALL_ITEMS = [];
+    let selected = [];
 
-  search.addEventListener('input', () => {
-    const q = normalize(search.value);
-    dropdown.innerHTML = '';
-    if(!q){ dropdown.style.display='none'; return; }
+    async function loadExcelItems(){
+      try{
+        const res = await fetch(EXCEL_FILE, {cache:'no-store'});
+        if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
+        const buf = await res.arrayBuffer();
+        const wb = XLSX.read(buf, {type:'array'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, {defval:''}); // {Item, Category, Unit}
 
-    const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
-    if(results.length === 0){ dropdown.style.display='none'; return; }
+        const items = [];
+        for(const r of rows){
+          const val = (r['Item'] ?? '').toString().trim();
+          const unit = (r['Unit'] ?? '').toString().trim();
+          if(val) items.push({item: val, unit});
+        }
+        ALL_ITEMS = items;
+      }catch(err){
+        console.error('Excel load error:', err);
+        ALL_ITEMS = [{item:'Fallback Item A', unit:'Nos'},{item:'Fallback Item B', unit:'Nos'}];
+      }
+    }
 
-    results.forEach(obj=>{
-      const div = document.createElement('div');
-      div.className = 'opt';
-      div.innerHTML = highlightMatch(obj.item, q);
-      div.onclick = ()=> askQty(obj);
-      dropdown.appendChild(div);
+    // --------------------------
+    // UI Logic
+    // --------------------------
+    const search = $('search');
+    const dropdown = $('dropdown');
+    const selectedList = $('selectedList');
+    const hiddenSelectedField = $('selected_items_field');
+
+    search.addEventListener('input', () => {
+      const q = normalize(search.value);
+      dropdown.innerHTML = '';
+      if(!q){ dropdown.style.display='none'; return; }
+
+      const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
+      if(results.length === 0){ dropdown.style.display='none'; return; }
+
+      results.forEach(obj=>{
+        const div = document.createElement('div');
+        div.className = 'opt';
+        div.innerHTML = highlightMatch(obj.item, q) + (obj.unit ? ' ('+obj.unit+')' : '');
+        div.onclick = ()=> askQty(obj);
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = 'block';
     });
-    dropdown.style.display = 'block';
-  });
 
-  function askQty(obj){
-    const qty = prompt(`Enter quantity for: ${obj.item} (${obj.unit || 'units'})`, "1");
-    if(qty && !isNaN(qty) && Number(qty) > 0){
-      addItem(obj, qty);
+    function askQty(obj){
+      const qty = prompt("Enter quantity for: " + obj.item);
+      if(qty && !isNaN(qty)){
+        addItem(obj.item, obj.unit, qty);
+      }
+      dropdown.style.display='none';
+      search.value='';
+      search.focus();
     }
-    dropdown.style.display='none';
-    search.value='';
-    search.focus();
-  }
 
-  function addItem(obj, qty){
-    selected.push({...obj, qty});
-    renderSelected();
-  }
-  function removeItem(idx){
-    selected.splice(idx,1);
-    renderSelected();
-  }
-  function renderSelected(){
-    selectedList.innerHTML = '';
-    selected.forEach((it, i)=>{
-      const row = document.createElement('div');
-      row.className = 'si';
-      row.innerHTML = `<span>${it.item} - ${it.qty} ${it.unit || ''}</span>
-                       <button class="rm" onclick="removeItem(${i})">Remove</button>`;
-      selectedList.appendChild(row);
-    });
-    hiddenSelectedField.value = selected.length ?
-      `Selected items:\n• ` + selected.map(it=>`${it.item} - ${it.qty} ${it.unit}`).join('\n• ') : '';
-  }
-
-  // --------------------------
-  // Send actions
-  // --------------------------
-  function collectCustomer(){
-    const name = $('custName').value.trim();
-    const phone = $('custPhone').value.trim();
-    const email = $('custEmail').value.trim();
-    const msg = $('custMsg').value.trim();
-    if(!name || !phone){
-      alert('Please fill your Name and Phone.');
-      return null;
+    function addItem(item, unit, qty){
+      selected.push({item, unit, qty});
+      renderSelected();
     }
-    return {name, phone, email, msg};
-  }
+    function removeItem(idx){
+      selected.splice(idx,1);
+      renderSelected();
+    }
+    function renderSelected(){
+      selectedList.innerHTML = '';
+      selected.forEach((obj, i)=>{
+        const row = document.createElement('div');
+        row.className = 'si';
+        row.innerHTML = `<span>${obj.item} - ${obj.qty} ${obj.unit}</span> <button class="rm" onclick="removeItem(${i})">Remove</button>`;
+        selectedList.appendChild(row);
+      });
+      hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.map(o=>`${o.item} - ${o.qty} ${o.unit}`).join('\n• ')}` : '';
+    }
 
-  function sendWhatsApp(){
-    const d = collectCustomer(); if(!d) return;
-    const text =
+    // --------------------------
+    // WhatsApp Send
+    // --------------------------
+    function collectCustomer(){
+      const name = $('custName').value.trim();
+      const phone = $('custPhone').value.trim();
+      const email = $('custEmail').value.trim();
+      const msg = $('custMsg').value.trim();
+      if(!name || !phone){
+        alert('Please fill your Name and Phone.');
+        return null;
+      }
+      return {name, phone, email, msg};
+    }
+
+    function sendWhatsApp(){
+      const d = collectCustomer(); if(!d) return;
+      const text =
 `Customer Enquiry - Electrical Items
 
 Items:
-• ${selected.map(it=>`${it.item} - ${it.qty} ${it.unit}`).join('\n• ')}
+• ${selected.map(o=>`${o.item} - ${o.qty} ${o.unit}`).join('\n• ')}
 
 Customer:
 Name: ${d.name}
 Phone: ${d.phone}
 Email: ${d.email}
 Message: ${d.msg}`;
-    const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
-  }
+      const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    }
 
-  function sendEmail(){
-    const d = collectCustomer(); if(!d) return;
-    const subject = "Customer Enquiry - Electrical Items";
-    const body =
-`Customer Enquiry - Electrical Items
-
-Items:
-• ${selected.map(it=>`${it.item} - ${it.qty} ${it.unit}`).join('\n• ')}
-
-Customer:
-Name: ${d.name}
-Phone: ${d.phone}
-Email: ${d.email}
-Message: ${d.msg}`;
-    const url = `mailto:${EMAIL_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = url;
-  }
-
-  window.removeItem = removeItem;
-  window.sendWhatsApp = sendWhatsApp;
-  window.sendEmail = sendEmail;
-  loadExcelItems();
-</script>
-
+    window.removeItem = removeItem;
+    window.sendWhatsApp = sendWhatsApp;
+    loadExcelItems();
+  </script>
 </body>
 </html>
