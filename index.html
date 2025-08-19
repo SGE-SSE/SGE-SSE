@@ -2,72 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SAI GANESH ELECTRICALS-SSE</title>
+  <title>SAI GANESH ELECTRICALS - SSE</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { font-size: 22px; margin-bottom: 4px; }
-    h2 { font-size: 18px; margin-top: 0; }
-    .contact { margin-bottom: 15px; font-size: 14px; }
-    #search { width: 100%; padding: 8px; font-size: 14px; }
-    #dropdown { border: 1px solid #ccc; max-height: 180px; overflow-y: auto; display: none; position: absolute; background: #fff; width: calc(100% - 20px); z-index: 1000; }
-    .opt { padding: 6px; cursor: pointer; }
-    .opt:hover { background: #f0f0f0; }
+    h1 { font-size: 22px; text-align: center; margin-bottom: 10px; }
+    .company-info { text-align: center; margin-bottom: 20px; }
+    .search-box { width: 100%; padding: 8px; font-size: 16px; }
+    #dropdown { border: 1px solid #ccc; max-height: 200px; overflow-y: auto; display:none; position:absolute; background:#fff; width:95%; }
+    .opt { padding:5px; cursor:pointer; }
+    .opt:hover { background:#eee; }
+    .si { margin:5px 0; padding:5px; border:1px solid #ddd; border-radius:5px; }
+    .rm { margin-left:10px; }
     .mark { background: yellow; }
-    #selectedList { margin-top: 15px; }
-    .si { padding: 6px; background: #eef; margin-bottom: 5px; border-radius: 4px; }
-    .rm { margin-left: 10px; }
-    button { margin-top: 8px; padding: 8px 14px; cursor: pointer; }
-    form { margin-top: 20px; }
-    form input, form textarea { display: block; width: 100%; margin-bottom: 10px; padding: 6px; }
+    .btn { margin: 8px; padding: 10px 15px; background: green; color: #fff; border:none; border-radius:5px; cursor:pointer; }
+    .btn:hover { opacity:0.9; }
+    .form-group { margin: 10px 0; }
   </style>
 </head>
 <body>
-  <h1>SAI GANESH ELECTRICALS-SSE</h1>
-  <div class="contact">
-    <strong>PROP:</strong> Dasari Krishna<br>
-    <strong>Phone:</strong> 9885750057<br>
-    <strong>Email:</strong> krishnadsge@gmail.com<br>
-    <strong>Sales Executive:</strong> Vinodharsha<br>
-    <strong>Email:</strong> vinodharsha21@gmail.com<br>
-    <strong>WhatsApp:</strong> 7483362854<br>
-    <em>We may be stationary, but our reach is dynamic.</em>
+
+  <h1>SAI GANESH ELECTRICALS - SSE</h1>
+  <div class="company-info">
+    <p><strong>PROP:</strong> DASARI KRISHNA</p>
+    <p><strong>Sales Executive:</strong> VINODHARSHA (📧 vinodharsha21@gmail.com)</p>
+    <p><strong>Phone:</strong> 9885750057 | <strong>WhatsApp:</strong> 7483362854</p>
+    <p><strong>Email:</strong> krishnadsge@gmail.com</p>
+    <p><em>We may be stationary, but our reach is dynamic.</em></p>
   </div>
 
-  <h2>Search Items</h2>
-  <input id="search" placeholder="Type to search (e.g. 1sqmm, switch, etc.)">
-  <div id="dropdown"></div>
+  <div>
+    <input type="text" id="search" class="search-box" placeholder="Search items...">
+    <div id="dropdown"></div>
+  </div>
 
-  <h2>Selected Items</h2>
+  <h3>Selected Items</h3>
   <div id="selectedList"></div>
 
-  <!-- Hidden field to pass selected items into form -->
-  <form id="emailForm" action="https://formspree.io/f/mnnadqge" method="POST" target="_blank">
-    <input type="hidden" name="selected_items" id="selected_items_field">
-
-    <input type="text" id="custName" name="name" placeholder="Your Name" required>
-    <input type="text" id="custPhone" name="phone" placeholder="Your Phone" required>
-    <input type="email" id="custEmail" name="email" placeholder="Your Email">
-    <textarea id="custMsg" name="message" placeholder="Additional message"></textarea>
-
-    <button type="submit">Send via Email</button>
-    <button type="button" onclick="sendWhatsApp()">Send via WhatsApp</button>
+  <h3>Your Details</h3>
+  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
+    <div class="form-group"><input type="text" id="custName" name="name" placeholder="Your Name" required></div>
+    <div class="form-group"><input type="text" id="custPhone" name="phone" placeholder="Phone Number" required></div>
+    <div class="form-group"><input type="email" id="custEmail" name="email" placeholder="Email"></div>
+    <div class="form-group"><textarea id="custMsg" name="message" placeholder="Message"></textarea></div>
+    <input type="hidden" id="selected_items_field" name="selected_items">
+    <button type="submit" class="btn">Send via Email</button>
+    <button type="button" class="btn" onclick="sendWhatsApp()">Send via WhatsApp</button>
   </form>
 
   <script>
-    // --------------------------
-    // Config
-    // --------------------------
-    const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
-    const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
+    const EXCEL_FILE = 'cc.xlsx';
+    const WHATSAPP_NUMBER_IN = '917483362854';
 
-    // --------------------------
-    // Helpers
-    // --------------------------
     const $ = id => document.getElementById(id);
     function normalize(s){
       return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
     }
+
     function highlightMatch(original, qNorm){
       const plain = String(original);
       const compact = normalize(plain);
@@ -84,9 +75,6 @@
       return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
     }
 
-    // --------------------------
-    // Data
-    // --------------------------
     let ALL_ITEMS = [];
     let selected = [];
 
@@ -103,18 +91,15 @@
         for(const r of rows){
           const val = (r['Item'] ?? '').toString().trim();
           const unit = (r['Unit'] ?? '').toString().trim();
-          if(val) items.push({item: val, unit});
+          if(val) items.push({name: val, unit});
         }
         ALL_ITEMS = items;
       }catch(err){
         console.error('Excel load error:', err);
-        ALL_ITEMS = [{item:'Fallback Item A', unit:'Nos'},{item:'Fallback Item B', unit:'Nos'}];
+        ALL_ITEMS = [{name:'Fallback Item A',unit:'Nos'},{name:'Fallback Item B',unit:'Mtrs'}];
       }
     }
 
-    // --------------------------
-    // UI Logic
-    // --------------------------
     const search = $('search');
     const dropdown = $('dropdown');
     const selectedList = $('selectedList');
@@ -125,32 +110,27 @@
       dropdown.innerHTML = '';
       if(!q){ dropdown.style.display='none'; return; }
 
-      const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
+      const results = ALL_ITEMS.filter(it => normalize(it.name).includes(q)).slice(0,300);
       if(results.length === 0){ dropdown.style.display='none'; return; }
 
-      results.forEach(obj=>{
+      results.forEach(it=>{
         const div = document.createElement('div');
         div.className = 'opt';
-        div.innerHTML = highlightMatch(obj.item, q) + (obj.unit ? ' ('+obj.unit+')' : '');
-        div.onclick = ()=> askQty(obj);
+        div.innerHTML = highlightMatch(it.name, q) + (it.unit ? ` (${it.unit})` : '');
+        div.onclick = ()=> addItem(it);
         dropdown.appendChild(div);
       });
       dropdown.style.display = 'block';
     });
 
-    function askQty(obj){
-      const qty = prompt("Enter quantity for: " + obj.item);
-      if(qty && !isNaN(qty)){
-        addItem(obj.item, obj.unit, qty);
-      }
+    function addItem(item){
+      const qty = prompt(`Enter quantity for ${item.name} (${item.unit})`);
+      if(!qty || isNaN(qty)) return;
+      selected.push(`${item.name} — ${qty} ${item.unit}`);
+      renderSelected();
       dropdown.style.display='none';
       search.value='';
       search.focus();
-    }
-
-    function addItem(item, unit, qty){
-      selected.push({item, unit, qty});
-      renderSelected();
     }
     function removeItem(idx){
       selected.splice(idx,1);
@@ -158,18 +138,15 @@
     }
     function renderSelected(){
       selectedList.innerHTML = '';
-      selected.forEach((obj, i)=>{
+      selected.forEach((it, i)=>{
         const row = document.createElement('div');
         row.className = 'si';
-        row.innerHTML = `<span>${obj.item} - ${obj.qty} ${obj.unit}</span> <button class="rm" onclick="removeItem(${i})">Remove</button>`;
+        row.innerHTML = `<span>${it}</span><button class="rm" onclick="removeItem(${i})">Remove</button>`;
         selectedList.appendChild(row);
       });
-      hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.map(o=>`${o.item} - ${o.qty} ${o.unit}`).join('\n• ')}` : '';
+      hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.join('\n• ')}` : '';
     }
 
-    // --------------------------
-    // WhatsApp Send
-    // --------------------------
     function collectCustomer(){
       const name = $('custName').value.trim();
       const phone = $('custPhone').value.trim();
@@ -188,7 +165,7 @@
 `Customer Enquiry - Electrical Items
 
 Items:
-• ${selected.map(o=>`${o.item} - ${o.qty} ${o.unit}`).join('\n• ')}
+• ${selected.join('\n• ')}
 
 Customer:
 Name: ${d.name}
