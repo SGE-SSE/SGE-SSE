@@ -5,225 +5,220 @@
   <title>SAI GANESH ELECTRICALS - SSE</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { font-size: 20px; margin-bottom: 5px; }
-    .company { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; }
-    .company p { margin:3px 0; }
-    #search { width:100%; padding:8px; }
-    #dropdown { border:1px solid #ccc; display:none; position:absolute; background:#fff; z-index:1000; max-height:200px; overflow-y:auto; width:300px; }
-    .opt { padding:6px; cursor:pointer; }
-    .opt:hover { background:#eee; }
-    .mark { background:yellow; }
-    #selectedList .si { padding:4px; margin:4px 0; border:1px solid #ddd; border-radius:4px; display:flex; justify-content:space-between; }
-    .rm { background:red; color:#fff; border:none; cursor:pointer; padding:2px 6px; }
-    .form-section { margin-top:20px; }
-    button { margin:5px 0; padding:6px 12px; cursor:pointer; border-radius:6px; border:1px solid #444; }
-    .success { color:green; font-weight:bold; }
+    body{font-family:Arial, sans-serif;margin:20px;background:#f9f9f9;}
+    h1{font-size:22px;margin-bottom:5px;}
+    h2{font-size:18px;margin:15px 0 5px;}
+    .header{background:#004080;color:white;padding:10px;border-radius:8px;}
+    .mark{background:yellow;}
+    .opt{padding:5px;cursor:pointer;border-bottom:1px solid #ccc;}
+    .opt:hover{background:#e0e0e0;}
+    #dropdown{border:1px solid #ccc;max-height:200px;overflow:auto;display:none;background:white;position:absolute;z-index:1000;width:300px;}
+    #selectedList .si{display:flex;justify-content:space-between;align-items:center;padding:5px;background:#fff;border:1px solid #ddd;margin-top:5px;border-radius:6px;}
+    .rm{background:red;color:white;border:none;padding:2px 6px;cursor:pointer;border-radius:4px;}
+    .qtyInput{width:60px;margin-left:10px;}
+    .success-msg{color:green;font-weight:bold;margin-top:10px;}
   </style>
 </head>
 <body>
-  <div class="company">
+  <div class="header">
     <h1>SAI GANESH ELECTRICALS - SSE</h1>
-    <p><strong>Prop:</strong> Dasari Krishna</p>
-    <p><strong>Phone:</strong> 9885750057</p>
-    <p><strong>Email:</strong> krishnadsge@gmail.com</p>
-    <p><strong>Sales Executive:</strong> Vinodharsha</p>
-    <p><strong>Email:</strong> vinodharsha21@gmail.com</p>
-    <p><strong>WhatsApp:</strong> 7483362854</p>
+    <p><b>Prop:</b> Dasari Krishna<br>
+       <b>Phone:</b> 9885750057<br>
+       <b>Email:</b> krishnadsge@gmail.com<br>
+       <b>Sales Executive:</b> Vinodharsha<br>
+       <b>Email:</b> vinodharsha21@gmail.com<br>
+       <b>WhatsApp:</b> 7483362854</p>
+    <p><i>We may be stationary, but our reach is dynamic!</i></p>
   </div>
 
-  <input id="search" placeholder="Search items..."/>
+  <h2>Search Inventory</h2>
+  <input id="search" placeholder="Type to search..." style="width:300px;padding:5px;">
   <div id="dropdown"></div>
 
-  <h3>Selected Items</h3>
+  <h2>Selected Items</h2>
   <div id="selectedList"></div>
 
-  <div class="form-section">
-    <h3>Customer Details</h3>
-    <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
-      <input type="hidden" name="selected_items" id="selected_items_field">
-      <p><input type="text" id="custName" name="name" placeholder="Your Name" required></p>
-      <p><input type="text" id="custPhone" name="phone" placeholder="Your Phone" required></p>
-      <p><input type="email" id="custEmail" name="email" placeholder="Your Email"></p>
-      <p><textarea id="custMsg" name="message" placeholder="Message"></textarea></p>
-      <button type="button" onclick="sendWhatsApp()">Send via WhatsApp</button>
-      <button type="submit">Send via Email</button>
-    </form>
-    <div id="formStatus"></div>
-  </div>
+  <h2>Customer Details</h2>
+  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
+    <input id="custName" name="name" placeholder="Your Name" required><br><br>
+    <input id="custPhone" name="phone" placeholder="Your Phone" required><br><br>
+    <input id="custEmail" name="email" placeholder="Your Email"><br><br>
+    <textarea id="custMsg" name="message" placeholder="Additional Message"></textarea><br><br>
+    <input type="hidden" id="selected_items_field" name="selectedItems">
 
-<script>
-  // --------------------------
-  // Config
-  // --------------------------
-  const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
-  const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
+    <button type="button" onclick="sendWhatsApp()">Send via WhatsApp</button>
+    <button type="submit">Send via Email</button>
+    <div id="formResponse" class="success-msg"></div>
+  </form>
 
-  // --------------------------
-  // Helpers
-  // --------------------------
-  const $ = id => document.getElementById(id);
-  function normalize(s){
-    return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
-  }
-  function highlightMatch(original, qNorm){
-    const plain = String(original);
-    const compact = normalize(plain);
-    const idx = compact.indexOf(qNorm);
-    if(idx < 0) return plain;
-    const map = [];
-    for(let i=0,c=0;i<plain.length;i++){
-      const ch = plain[i];
-      if(!/[\s.\-_/]/.test(ch)){ map[c++] = i; }
+  <script>
+    // --------------------------
+    // Config
+    // --------------------------
+    const EXCEL_FILE = 'cc.xlsx';
+    const WHATSAPP_NUMBER_IN = '917483362854';
+
+    // --------------------------
+    // Helpers
+    // --------------------------
+    const $ = id => document.getElementById(id);
+    function normalize(s){ return String(s).toLowerCase().replace(/[\s.\-_/]+/g,''); }
+    function highlightMatch(original, qNorm){
+      const plain = String(original);
+      const compact = normalize(plain);
+      const idx = compact.indexOf(qNorm);
+      if(idx < 0) return plain;
+      const map = [];
+      for(let i=0,c=0;i<plain.length;i++){ if(!/[\s.\-_/]/.test(plain[i])) map[c++] = i; }
+      const s = map[idx] ?? 0;
+      const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
+      return plain.slice(0,s)+'<span class="mark">'+plain.slice(s,e)+'</span>'+plain.slice(e);
     }
-    const s = map[idx] ?? 0;
-    const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
-    return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
-  }
 
-  // --------------------------
-  // Data
-  // --------------------------
-  let ALL_ITEMS = [];
-  let selected = [];
+    // header synonyms
+    const ITEM_HEADERS = ['item','items','description','product'];
+    const UNIT_HEADERS = ['unit','units','uom','unitofmeasure','uom/units'];
+    function normalizeHeader(s){ return String(s||'').toLowerCase().replace(/\s+/g,'').trim(); }
+    function findColIndex(headers, accepted){
+      const canon = headers.map(normalizeHeader);
+      for(let i=0;i<canon.length;i++){ if(accepted.includes(canon[i])) return i; }
+      return -1;
+    }
 
-  // Load Excel
-  async function loadExcelItems(){
-    try{
-      const res = await fetch(EXCEL_FILE, {cache:'no-store'});
-      if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
-      const buf = await res.arrayBuffer();
-      const wb = XLSX.read(buf, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+    // --------------------------
+    // Data
+    // --------------------------
+    let ALL_ITEMS = []; // array of {item, unit}
+    let selected = [];
 
-      const items = [];
-      for(const r of rows){
-        const val = (r['Item'] ?? r['ITEM'] ?? r['item'] ?? '').toString().trim();
-        const unit = (r['Unit'] ?? r['Units'] ?? r['UNIT'] ?? r['units'] ?? '').toString().trim();
-        if(val){
-          items.push({name: val, unit: unit || 'Nos'}); // default Nos
+    async function loadExcelItems(){
+      try{
+        const res = await fetch(EXCEL_FILE, {cache:'no-store'});
+        if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
+        const buf = await res.arrayBuffer();
+        const wb = XLSX.read(buf, {type:'array'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+        const headers = rows[0].map(h=>h||'');
+        const itemCol = findColIndex(headers, ITEM_HEADERS);
+        const unitCol = findColIndex(headers, UNIT_HEADERS);
+
+        ALL_ITEMS = [];
+        for(let r=1;r<rows.length;r++){
+          const row = rows[r];
+          const item = (row[itemCol]||'').toString().trim();
+          const unit = (row[unitCol]||'').toString().trim();
+          if(item) ALL_ITEMS.push({item, unit});
         }
+      }catch(err){
+        console.error('Excel load error:', err);
+        ALL_ITEMS = [{item:'Fallback Item A', unit:'pcs'}];
       }
-      ALL_ITEMS = items;
-    }catch(err){
-      console.error('Excel load error:', err);
-      ALL_ITEMS = [{name:'Fallback Item A',unit:'Nos'},{name:'Fallback Item B',unit:'Mtrs'}];
     }
-  }
 
-  // --------------------------
-  // UI Logic
-  // --------------------------
-  const search = $('search');
-  const dropdown = $('dropdown');
-  const selectedList = $('selectedList');
-  const hiddenSelectedField = $('selected_items_field');
+    // --------------------------
+    // UI Logic
+    // --------------------------
+    const search = $('search');
+    const dropdown = $('dropdown');
+    const selectedList = $('selectedList');
+    const hiddenSelectedField = $('selected_items_field');
 
-  search.addEventListener('input', () => {
-    const q = normalize(search.value);
-    dropdown.innerHTML = '';
-    if(!q){ dropdown.style.display='none'; return; }
+    search.addEventListener('input', () => {
+      const q = normalize(search.value);
+      dropdown.innerHTML = '';
+      if(!q){ dropdown.style.display='none'; return; }
 
-    const results = ALL_ITEMS.filter(it => normalize(it.name).includes(q)).slice(0,300);
-    if(results.length === 0){ dropdown.style.display='none'; return; }
+      const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
+      if(results.length === 0){ dropdown.style.display='none'; return; }
 
-    results.forEach(it=>{
-      const div = document.createElement('div');
-      div.className = 'opt';
-      div.innerHTML = highlightMatch(it.name + ' ('+it.unit+')', q);
-      div.onclick = ()=> addItem(it);
-      dropdown.appendChild(div);
+      results.forEach(it=>{
+        const div = document.createElement('div');
+        div.className = 'opt';
+        div.innerHTML = highlightMatch(it.item, q) + (it.unit ? ` (${it.unit})` : '');
+        div.onclick = ()=> addItem(it);
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = 'block';
     });
-    dropdown.style.display = 'block';
-  });
 
-  function addItem(item){
-    const qty = prompt(`Enter quantity for ${item.name} (${item.unit})`);
-    if(!qty || isNaN(qty)) return;
-    selected.push(`${item.name} — ${qty} ${item.unit}`);
-    renderSelected();
-    dropdown.style.display='none';
-    search.value='';
-    search.focus();
-  }
-  function removeItem(idx){
-    selected.splice(idx,1);
-    renderSelected();
-  }
-  function renderSelected(){
-    selectedList.innerHTML = '';
-    selected.forEach((it, i)=>{
-      const row = document.createElement('div');
-      row.className = 'si';
-      row.innerHTML = `<span>${it}</span><button class="rm" onclick="removeItem(${i})">Remove</button>`;
-      selectedList.appendChild(row);
-    });
-    hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.join('\n• ')}` : '';
-  }
-
-  // --------------------------
-  // Send actions
-  // --------------------------
-  function collectCustomer(){
-    const name = $('custName').value.trim();
-    const phone = $('custPhone').value.trim();
-    const email = $('custEmail').value.trim();
-    const msg = $('custMsg').value.trim();
-    if(!name || !phone){
-      alert('Please fill your Name and Phone.');
-      return null;
+    function addItem(obj){
+      const qty = prompt(`Enter quantity for: ${obj.item} (${obj.unit||''})`, "1");
+      if(qty && !isNaN(qty)){
+        selected.push({...obj, qty: qty});
+        renderSelected();
+      }
+      dropdown.style.display='none';
+      search.value='';
+      search.focus();
     }
-    return {name, phone, email, msg};
-  }
+    function removeItem(idx){ selected.splice(idx,1); renderSelected(); }
+    function renderSelected(){
+      selectedList.innerHTML = '';
+      selected.forEach((it, i)=>{
+        const row = document.createElement('div');
+        row.className = 'si';
+        row.innerHTML = `<span>${it.item} - ${it.qty} ${it.unit||''}</span>
+                         <button class="rm" onclick="removeItem(${i})">Remove</button>`;
+        selectedList.appendChild(row);
+      });
+      hiddenSelectedField.value = selected.length ?
+        `Selected items:\n• ${selected.map(it=>`${it.item} - ${it.qty} ${it.unit||''}`).join('\n• ')}` : '';
+    }
 
-  function sendWhatsApp(){
-    const d = collectCustomer(); if(!d) return;
-    const text =
+    // --------------------------
+    // Send actions
+    // --------------------------
+    function collectCustomer(){
+      const name = $('custName').value.trim();
+      const phone = $('custPhone').value.trim();
+      const email = $('custEmail').value.trim();
+      const msg = $('custMsg').value.trim();
+      if(!name || !phone){ alert('Please fill your Name and Phone.'); return null; }
+      return {name, phone, email, msg};
+    }
+
+    function sendWhatsApp(){
+      const d = collectCustomer(); if(!d) return;
+      const text =
 `Customer Enquiry - Electrical Items
 
 Items:
-• ${selected.join('\n• ')}
+• ${selected.map(it=>`${it.item} - ${it.qty} ${it.unit||''}`).join('\n• ')}
 
 Customer:
 Name: ${d.name}
 Phone: ${d.phone}
 Email: ${d.email}
 Message: ${d.msg}`;
-    const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
-  }
-
-  // --------------------------
-  // Email submit with AJAX (no redirect)
-  // --------------------------
-  const form = document.getElementById('enquiryForm');
-  form.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const data = new FormData(form);
-    const status = document.getElementById('formStatus');
-    try{
-      const res = await fetch(form.action, {
-        method: form.method,
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      });
-      if(res.ok){
-        status.innerHTML = '<p class="success">✅ Enquiry submitted successfully!</p>';
-        form.reset();
-        selected = [];
-        renderSelected();
-      }else{
-        status.innerHTML = '<p style="color:red;">❌ Failed to send enquiry. Try again.</p>';
-      }
-    }catch(err){
-      status.innerHTML = '<p style="color:red;">⚠️ Error sending enquiry.</p>';
+      const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
     }
-  });
 
-  window.removeItem = removeItem;
-  window.sendWhatsApp = sendWhatsApp;
-  loadExcelItems();
-</script>
+    // handle formspree submit without leaving page
+    document.getElementById("enquiryForm").addEventListener("submit", async function(e){
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+      try {
+        const res = await fetch(form.action, {method: form.method, body: data, headers: {'Accept':'application/json'}});
+        if(res.ok){
+          $('formResponse').textContent = "Successfully submitted!";
+          form.reset();
+          selected = [];
+          renderSelected();
+        } else {
+          $('formResponse').textContent = "Error submitting form.";
+        }
+      } catch(err){
+        $('formResponse').textContent = "Submission failed.";
+      }
+    });
+
+    window.removeItem = removeItem;
+    window.sendWhatsApp = sendWhatsApp;
+    loadExcelItems();
+  </script>
 </body>
-</html>
+</html> 
+Displaying SR INFRA PRIVATE LIMITED STATEMENT.xlsx.
