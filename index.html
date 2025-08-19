@@ -2,59 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SAI GANESH ELECTRICALS - SSE</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <title>Electrical Store Enquiry</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-    .search-box { margin-bottom: 10px; }
-    #search { width: 100%; padding: 8px; }
-    #dropdown { border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto; position: absolute; background: #fff; width: 300px; z-index: 10; }
-    #dropdown .opt { padding: 6px; cursor: pointer; }
-    #dropdown .opt:hover { background: #eee; }
+    #search { width: 300px; padding: 8px; }
+    #dropdown { border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto; width: 300px; background: #fff; position: absolute; z-index: 1000; }
+    .opt { padding: 5px; cursor: pointer; }
+    .opt:hover { background: #f0f0f0; }
     .mark { background: yellow; }
-    #selectedList .si { margin: 5px 0; padding: 5px; border: 1px solid #ddd; border-radius: 5px; display: flex; justify-content: space-between; }
-    #selectedList .rm { margin-left: 10px; cursor: pointer; color: red; }
+    .si { margin: 5px 0; padding: 5px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
+    .rm { margin-left: 10px; cursor: pointer; }
+    #selectedList { margin-top: 10px; }
+    .btn { padding: 10px 15px; margin: 5px; border: none; background: green; color: white; cursor: pointer; border-radius: 4px; }
+    .btn.email { background: #0073e6; }
     form { margin-top: 20px; }
-    input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
-    button { margin: 5px 5px 0 0; padding: 8px 12px; }
+    input, textarea { display: block; margin: 5px 0 15px; padding: 8px; width: 300px; }
   </style>
 </head>
 <body>
 
-<header>
-  SAI GANESH ELECTRICALS - SSE <br>
-  PROP: DASARI KRISHNA <br>
-  Phone: 9885750057 | Email: krishnadsge@gmail.com <br>
-  Sales Executive: VINODHARSHA | Email: vinodharsha21@gmail.com | WhatsApp: 7483362854 <br>
-  <i>"We may be stationary, but our reach is dynamic."</i>
-</header>
+  <h2>Electrical Store Enquiry</h2>
 
-<div class="search-box">
-  <input id="search" type="text" placeholder="Search items...">
+  <input id="search" type="text" placeholder="Search item...">
   <div id="dropdown"></div>
-</div>
 
-<h3>Selected Items</h3>
-<div id="selectedList"></div>
+  <h3>Selected Items</h3>
+  <div id="selectedList"></div>
 
-<form id="contactForm" onsubmit="return false;">
-  <input id="custName" placeholder="Your Name *">
-  <input id="custPhone" placeholder="Phone Number *">
-  <input id="custEmail" placeholder="Email (optional)">
-  <textarea id="custMsg" placeholder="Message (optional)"></textarea>
-  <input type="hidden" id="selected_items_field" name="selected_items">
+  <form id="enquiryForm">
+    <input id="custName" placeholder="Your Name" required>
+    <input id="custPhone" placeholder="Phone Number" required>
+    <input id="custEmail" placeholder="Email">
+    <textarea id="custMsg" placeholder="Message"></textarea>
+    <input type="hidden" id="selected_items_field" name="selected_items">
+  </form>
 
-  <button type="button" onclick="sendWhatsApp()">Send via WhatsApp</button>
-  <button type="button" onclick="sendEmail()">Send via Email</button>
-</form>
+  <button class="btn" onclick="sendWhatsApp()">Send via WhatsApp</button>
+  <button class="btn email" onclick="sendEmail()">Send via Email</button>
 
 <script>
   // --------------------------
   // Config
   // --------------------------
   const EXCEL_FILE = 'cc.xlsx'; // must sit next to index.html
-  const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854 (include country code)
+  const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854
   const EMAIL_TO = 'vinodharsha21@gmail.com';
 
   // --------------------------
@@ -82,10 +74,10 @@
   // --------------------------
   // Data
   // --------------------------
-  let ALL_ITEMS = []; // {Item, Category, Unit}
+  let ALL_ITEMS = [];
   let selected = [];
 
-  // Load Excel: Item + Category + Unit
+  // Load Excel
   async function loadExcelItems(){
     try{
       const res = await fetch(EXCEL_FILE, {cache:'no-store'});
@@ -93,16 +85,16 @@
       const buf = await res.arrayBuffer();
       const wb = XLSX.read(buf, {type:'array'});
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {defval:''}); // {Item, Category, Unit}
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
 
       ALL_ITEMS = rows.map(r => ({
-        item: (r['Item'] ?? '').toString().trim(),
-        category: (r['Category'] ?? '').toString().trim(),
-        unit: (r['Unit'] ?? '').toString().trim()
+        item: (r['Item'] || r['item'] || '').toString().trim(),
+        category: (r['Category'] || r['category'] || '').toString().trim(),
+        unit: (r['Unit'] || r['unit'] || '').toString().trim()
       })).filter(r => r.item);
     }catch(err){
       console.error('Excel load error:', err);
-      ALL_ITEMS = [{item:'Fallback Item A', category:'Misc', unit:'Nos'}];
+      ALL_ITEMS = [{item:'Fallback Item A', category:'General', unit:''}];
     }
   }
 
@@ -122,27 +114,29 @@
     const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
     if(results.length === 0){ dropdown.style.display='none'; return; }
 
-    results.forEach(it=>{
+    results.forEach(obj=>{
       const div = document.createElement('div');
       div.className = 'opt';
-      div.innerHTML = highlightMatch(it.item, q);
-      div.onclick = ()=> addItem(it);
+      div.innerHTML = highlightMatch(obj.item, q);
+      div.onclick = ()=> askQty(obj);
       dropdown.appendChild(div);
     });
     dropdown.style.display = 'block';
   });
 
-  function addItem(obj){
-    let qty = prompt(`Enter quantity for: ${obj.item} (${obj.unit})`);
-    if(!qty || isNaN(qty) || Number(qty) <= 0){
-      alert("Invalid quantity");
-      return;
+  function askQty(obj){
+    const qty = prompt(`Enter quantity for: ${obj.item} (${obj.unit || 'units'})`, "1");
+    if(qty && !isNaN(qty) && Number(qty) > 0){
+      addItem(obj, qty);
     }
-    selected.push({...obj, qty: Number(qty)});
-    renderSelected();
     dropdown.style.display='none';
     search.value='';
     search.focus();
+  }
+
+  function addItem(obj, qty){
+    selected.push({...obj, qty});
+    renderSelected();
   }
   function removeItem(idx){
     selected.splice(idx,1);
@@ -153,10 +147,12 @@
     selected.forEach((it, i)=>{
       const row = document.createElement('div');
       row.className = 'si';
-      row.innerHTML = `<span>${it.item} — ${it.qty} ${it.unit}</span><button class="rm" onclick="removeItem(${i})">Remove</button>`;
+      row.innerHTML = `<span>${it.item} - ${it.qty} ${it.unit || ''}</span>
+                       <button class="rm" onclick="removeItem(${i})">Remove</button>`;
       selectedList.appendChild(row);
     });
-    hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.map(it=> it.item + ' — ' + it.qty + ' ' + it.unit).join('\n• ')}` : '';
+    hiddenSelectedField.value = selected.length ?
+      `Selected items:\n• ` + selected.map(it=>`${it.item} - ${it.qty} ${it.unit}`).join('\n• ') : '';
   }
 
   // --------------------------
@@ -180,7 +176,7 @@
 `Customer Enquiry - Electrical Items
 
 Items:
-• ${selected.map(it => `${it.item} — ${it.qty} ${it.unit}`).join('\n• ')}
+• ${selected.map(it=>`${it.item} - ${it.qty} ${it.unit}`).join('\n• ')}
 
 Customer:
 Name: ${d.name}
@@ -195,16 +191,18 @@ Message: ${d.msg}`;
     const d = collectCustomer(); if(!d) return;
     const subject = "Customer Enquiry - Electrical Items";
     const body =
-`Items:
-• ${selected.map(it => `${it.item} — ${it.qty} ${it.unit}`).join('\n• ')}
+`Customer Enquiry - Electrical Items
+
+Items:
+• ${selected.map(it=>`${it.item} - ${it.qty} ${it.unit}`).join('\n• ')}
 
 Customer:
 Name: ${d.name}
 Phone: ${d.phone}
 Email: ${d.email}
 Message: ${d.msg}`;
-    const mailto = `mailto:${EMAIL_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+    const url = `mailto:${EMAIL_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = url;
   }
 
   window.removeItem = removeItem;
