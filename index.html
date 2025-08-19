@@ -1,108 +1,170 @@
-<script>
-  const EXCEL_FILE = 'cc.xlsx';
-  const $ = id => document.getElementById(id);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory Enquiry</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .opt { padding: 5px; cursor: pointer; border-bottom: 1px solid #eee; }
+    .opt:hover { background: #f0f0f0; }
+    .mark { background: yellow; }
+    .si { margin: 5px 0; padding: 5px; border: 1px solid #ddd; border-radius: 5px; display:flex; justify-content:space-between; }
+    .rm { margin-left: 10px; color: red; cursor: pointer; border:none; background:none; }
+    #dropdown { border:1px solid #ccc; max-height:200px; overflow-y:auto; display:none; position:absolute; background:#fff; width:300px; }
+    #search { width:300px; padding:5px; }
+    #selectedList { margin-top:20px; }
+    #message { margin-top:10px; font-weight:bold; }
+  </style>
+</head>
+<body>
 
-  function normalize(s){
-    return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
-  }
-  function highlightMatch(original, qNorm){
-    const plain = String(original);
-    const compact = normalize(plain);
-    const idx = compact.indexOf(qNorm);
-    if(idx < 0) return plain;
-    const map = [];
-    for(let i=0,c=0;i<plain.length;i++){
-      const ch = plain[i];
-      if(!/[\s.\-_/]/.test(ch)){ map[c++] = i; }
+  <h2>Search Inventory</h2>
+  <input id="search" type="text" placeholder="Type to search">
+  <div id="dropdown"></div>
+
+  <h3>Selected Items</h3>
+  <div id="selectedList"></div>
+
+  <h3>Customer Details</h3>
+  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
+    <input type="hidden" name="selected_items" id="selected_items_field">
+    <input type="text" name="name" placeholder="Your Name" required><br><br>
+    <input type="email" name="email" placeholder="Your Email" required><br><br>
+    <input type="text" name="phone" placeholder="Your Phone"><br><br>
+    <button type="submit">Send Enquiry</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const EXCEL_FILE = 'cc.xlsx';
+    const $ = id => document.getElementById(id);
+
+    function normalize(s){
+      return String(s).toLowerCase().replace(/[\s.\-_/]+/g,'');
     }
-    const s = map[idx] ?? 0;
-    const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
-    return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
-  }
-
-  let ALL_ITEMS = [];
-  let selected = [];
-
-  async function loadExcelItems(){
-    try{
-      const res = await fetch(EXCEL_FILE, {cache:'no-store'});
-      if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
-      const buf = await res.arrayBuffer();
-      const wb = XLSX.read(buf, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-
-      const items = [];
-      for(const r of rows){
-        // normalize keys
-        const keys = Object.keys(r).reduce((acc,k)=>{
-          acc[normalize(k)] = r[k];
-          return acc;
-        },{});
-
-        const val = (keys['item'] ?? '').toString().trim();
-        const unit = (keys['unit'] ?? keys['units'] ?? '').toString().trim();
-
-        if(val){
-          items.push({item: val, unit: unit || 'Nos'});
-        }
+    function highlightMatch(original, qNorm){
+      const plain = String(original);
+      const compact = normalize(plain);
+      const idx = compact.indexOf(qNorm);
+      if(idx < 0) return plain;
+      const map = [];
+      for(let i=0,c=0;i<plain.length;i++){
+        const ch = plain[i];
+        if(!/[\s.\-_/]/.test(ch)){ map[c++] = i; }
       }
-      ALL_ITEMS = items;
-      console.log("Loaded items:", ALL_ITEMS.slice(0,5)); // debug
-    }catch(err){
-      console.error('Excel load error:', err);
-      ALL_ITEMS = [{item:'Fallback Item A', unit:'Nos'},{item:'Fallback Item B', unit:'Mtrs'}];
+      const s = map[idx] ?? 0;
+      const e = (map[idx + qNorm.length - 1] ?? (plain.length-1)) + 1;
+      return plain.slice(0,s) + '<span class="mark">' + plain.slice(s,e) + '</span>' + plain.slice(e);
     }
-  }
 
-  const search = $('search');
-  const dropdown = $('dropdown');
-  const selectedList = $('selectedList');
-  const hiddenSelectedField = $('selected_items_field');
+    let ALL_ITEMS = [];
+    let selected = [];
 
-  search.addEventListener('input', () => {
-    const q = normalize(search.value);
-    dropdown.innerHTML = '';
-    if(!q){ dropdown.style.display='none'; return; }
+    async function loadExcelItems(){
+      try{
+        const res = await fetch(EXCEL_FILE, {cache:'no-store'});
+        if(!res.ok) throw new Error('Cannot fetch cc.xlsx');
+        const buf = await res.arrayBuffer();
+        const wb = XLSX.read(buf, {type:'array'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
 
-    const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
-    if(results.length === 0){ dropdown.style.display='none'; return; }
+        const items = [];
+        for(const r of rows){
+          const keys = Object.keys(r).reduce((acc,k)=>{
+            acc[normalize(k)] = r[k];
+            return acc;
+          },{});
 
-    results.forEach(it=>{
-      const div = document.createElement('div');
-      div.className = 'opt';
-      div.innerHTML = highlightMatch(it.item, q);
-      div.onclick = ()=> addItem(it);
-      dropdown.appendChild(div);
+          const val = (keys['item'] ?? '').toString().trim();
+          const unit = (keys['unit'] ?? keys['units'] ?? '').toString().trim();
+
+          if(val){
+            items.push({item: val, unit: unit || 'Nos'});
+          }
+        }
+        ALL_ITEMS = items;
+        console.log("Loaded items:", ALL_ITEMS.slice(0,5)); // debug
+      }catch(err){
+        console.error('Excel load error:', err);
+        ALL_ITEMS = [{item:'Fallback Item A', unit:'Nos'},{item:'Fallback Item B', unit:'Mtrs'}];
+      }
+    }
+
+    const search = $('search');
+    const dropdown = $('dropdown');
+    const selectedList = $('selectedList');
+    const hiddenSelectedField = $('selected_items_field');
+    const message = $('message');
+
+    search.addEventListener('input', () => {
+      const q = normalize(search.value);
+      dropdown.innerHTML = '';
+      if(!q){ dropdown.style.display='none'; return; }
+
+      const results = ALL_ITEMS.filter(it => normalize(it.item).includes(q)).slice(0,300);
+      if(results.length === 0){ dropdown.style.display='none'; return; }
+
+      results.forEach(it=>{
+        const div = document.createElement('div');
+        div.className = 'opt';
+        div.innerHTML = highlightMatch(it.item, q);
+        div.onclick = ()=> addItem(it);
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = 'block';
     });
-    dropdown.style.display = 'block';
-  });
 
-  function addItem(it){
-    const qty = prompt(`Enter quantity for: ${it.item}`);
-    if(!qty) return;
-    selected.push({item: it.item, unit: it.unit, qty: qty});
-    renderSelected();
-    dropdown.style.display='none';
-    search.value='';
-    search.focus();
-  }
-  function removeItem(idx){
-    selected.splice(idx,1);
-    renderSelected();
-  }
-  function renderSelected(){
-    selectedList.innerHTML = '';
-    selected.forEach((it, i)=>{
-      const row = document.createElement('div');
-      row.className = 'si';
-      row.innerHTML = `<span>${it.item} – ${it.qty} ${it.unit}</span>
-        <button class="rm" onclick="removeItem(${i})">Remove</button>`;
-      selectedList.appendChild(row);
+    function addItem(it){
+      const qty = prompt(`Enter quantity for: ${it.item}`);
+      if(!qty) return;
+      selected.push({item: it.item, unit: it.unit, qty: qty});
+      renderSelected();
+      dropdown.style.display='none';
+      search.value='';
+      search.focus();
+    }
+    function removeItem(idx){
+      selected.splice(idx,1);
+      renderSelected();
+    }
+    function renderSelected(){
+      selectedList.innerHTML = '';
+      selected.forEach((it, i)=>{
+        const row = document.createElement('div');
+        row.className = 'si';
+        row.innerHTML = `<span>${it.item} – ${it.qty} ${it.unit}</span>
+          <button class="rm" onclick="removeItem(${i})">Remove</button>`;
+        selectedList.appendChild(row);
+      });
+      hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.map(it=>`${it.item} – ${it.qty} ${it.unit}`).join('\n• ')}` : '';
+    }
+
+    window.removeItem = removeItem;
+
+    // Handle Formspree submission inline
+    document.getElementById('enquiryForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const formData = new FormData(this);
+      try {
+        const res = await fetch(this.action, { method:'POST', body:formData, headers:{'Accept':'application/json'} });
+        if(res.ok){
+          message.textContent = "✅ Enquiry submitted successfully!";
+          this.reset();
+          selected = [];
+          renderSelected();
+        } else {
+          message.textContent = "❌ Failed to submit enquiry.";
+        }
+      } catch(err){
+        message.textContent = "⚠️ Error: " + err.message;
+      }
     });
-    hiddenSelectedField.value = selected.length ? `Selected items:\n• ${selected.map(it=>`${it.item} – ${it.qty} ${it.unit}`).join('\n• ')}` : '';
-  }
 
-  window.removeItem = removeItem;
-  loadExcelItems();
-</script> 
+    loadExcelItems();
+  </script>
+
+</body>
+</html> 
