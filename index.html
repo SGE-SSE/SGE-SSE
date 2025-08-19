@@ -1,178 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>SAI GANESH ELECTRICALS - SSE</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body{font-family:Arial, sans-serif;margin:16px;background:#fafafa;color:#111}
-    .header{background:#0b5bb3;color:#fff;padding:14px;border-radius:10px;margin-bottom:16px}
-    .header h1{margin:0 0 6px 0;font-size:20px}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    .search-wrap{position:relative;max-width:520px}
-    #search{width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px}
-    #dropdown{position:absolute;left:0;right:0;top:46px;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:260px;overflow:auto;display:none;z-index:10}
-    .opt{padding:8px 10px;border-bottom:1px solid #f1f1f1;cursor:pointer}
-    .opt:hover{background:#f5faff}
-    .mark{background:yellow}
-    .card{background:#fff;border:1px solid #e7e7e7;border-radius:10px;padding:12px}
-    #selectedList .si{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid #eaeaea;border-radius:8px;margin-top:6px;background:#f8fcff}
-    .rm{border:none;background:#e53935;color:#fff;border-radius:6px;padding:4px 8px;cursor:pointer}
-    .btn{border:none;background:#0b5bb3;color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .success{color:#1a7f37;font-weight:700;margin-top:8px}
-    .field{margin:6px 0}
-    .field input,.field textarea{width:100%;max-width:520px;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px}
-    .company p{margin:2px 0}
-    @media(min-width:880px){.grid{grid-template-columns:1.2fr .8fr}}
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    header {
+      background: #3f51b5;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    #search {
+      display: block;
+      width: 90%;
+      margin: 15px auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    #results {
+      max-width: 90%;
+      margin: auto;
+    }
+    .item {
+      padding: 8px;
+      margin: 4px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .item:hover {
+      background: #f0f0f0;
+    }
+    #selectedList {
+      max-width: 90%;
+      margin: 15px auto;
+    }
+    #selectedList .si {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border: 1px solid #eaeaea;
+      border-radius: 8px;
+      margin-top: 6px;
+      background: #f8fcff;
+      white-space: nowrap;
+    }
+    .rm {
+      background: red;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    form {
+      max-width: 90%;
+      margin: 20px auto;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    form input, form textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    form button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .whatsapp { background: #25d366; color: white; }
+    .email { background: #3f51b5; color: white; }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>SAI GANESH ELECTRICALS - SSE</h1>
-    <div class="company">
-      <p><b>Prop:</b> Dasari Krishna — <b>Phone:</b> 9885750057 — <b>Email:</b> krishnadsge@gmail.com</p>
-      <p><b>Sales Executive:</b> Vinodharsha — <b>Email:</b> vinodharsha21@gmail.com — <b>WhatsApp:</b> 7483362854</p>
-      <p><i>We may be stationary, but our reach is dynamic!</i></p>
-    </div>
-  </div>
+  <header>
+    <h2>SAI GANESH ELECTRICALS - SSE</h2>
+    <p>Prop: Dasari Krishna — Phone: 9885750657 — Email: krishnatsge@gmail.com</p>
+    <p>Sales Executive: Vindoharsha — Email: vindoharsha12@gmail.com — WhatsApp: 7483362854</p>
+  </header>
 
-  <div class="grid">
-    <!-- LEFT: Search + Selected -->
-    <div class="card">
-      <h3>Search Inventory</h3>
-      <div class="search-wrap">
-        <input id="search" type="text" placeholder="Type to search items (e.g., 1sqmm, 4 sqmm, conduit, fan)"/>
-        <div id="dropdown"></div>
-      </div>
+  <input type="text" id="search" placeholder="Type to search items (e.g. 1sqmm, 4sqmm, Conduit, fan)">
+  <div id="results"></div>
 
-      <h3 style="margin-top:16px">Selected Items</h3>
-      <div id="selectedList"></div>
-    </div>
+  <h3 style="margin-left:5%;">Selected Items</h3>
+  <div id="selectedList"></div>
 
-    <!-- RIGHT: Customer form -->
-    <div class="card">
-      <h3>Customer Details & Send Enquiry</h3>
-      <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
-        <input type="hidden" name="selected_items" id="selected_items_field" />
-        <div class="field"><input id="custName" name="name" placeholder="Your Name" required /></div>
-        <div class="field"><input id="custPhone" name="phone" placeholder="Your Phone" required /></div>
-        <div class="field"><input id="custEmail" name="email" placeholder="Your Email" /></div>
-        <div class="field"><textarea id="custMsg" name="message" rows="4" placeholder="Additional message (optional)"></textarea></div>
+  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
+    <h3>Customer Details & Send Enquiry</h3>
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="tel" name="phone" placeholder="Your Phone" required>
+    <input type="email" name="email" placeholder="Your Email" required>
+    <textarea name="message" placeholder="Additional message (optional)"></textarea>
+    <input type="hidden" name="selected" id="hiddenSelected">
 
-        <div class="field" style="display:flex;gap:10px;flex-wrap:wrap">
-          <button type="button" class="btn" onclick="sendWhatsApp()">Send via WhatsApp</button>
-          <button type="submit" class="btn">Send via Email</button>
-        </div>
-        <div id="formResponse" class="success" style="display:none">✅ Successfully submitted!</div>
-      </form>
-    </div>
-  </div>
+    <button type="button" class="whatsapp" onclick="sendWhatsApp()">Send via WhatsApp</button>
+    <button type="submit" class="email">Send via Email</button>
+  </form>
 
   <script>
-    const EXCEL_FILE = 'cc.xlsx';           
-    const WHATSAPP_NUMBER_IN = '917483362854';
-
-    const $ = id => document.getElementById(id);
-    function normalizeText(s){ return String(s||'').toLowerCase().replace(/[\s.\-_/]+/g,''); }
-
-    let ALL_ITEMS = []; // { item, unit }
+    let inventory = [];
     let selected = [];
 
-    async function loadExcelItems(){
-      try{
-        const res = await fetch(EXCEL_FILE, {cache:'no-store'});
-        const buf = await res.arrayBuffer();
-        const wb = XLSX.read(buf, {type:'array'});
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-        if(!rows.length) return;
-
-        const headers = rows[0].map(h => h.toString().trim().toLowerCase());
-        const itemCol = headers.findIndex(h => h.includes('item'));
-        const unitCol = headers.findIndex(h => h.includes('unit'));
-
-        for(let r=1; r<rows.length; r++){
-          const item = (rows[r][itemCol] ?? '').toString().trim();
-          const unit = unitCol >= 0 ? (rows[r][unitCol] ?? '').toString().trim() : '';
-          if(item) ALL_ITEMS.push({ item, unit });
-        }
-      }catch(e){ console.error('Excel load error:', e); }
-    }
-
-    const search = $('search'), dropdown = $('dropdown');
-    const selectedList = $('selectedList');
-    const hiddenSelectedField = $('selected_items_field');
-
-    search.addEventListener('input', () => {
-      const q = normalizeText(search.value);
-      dropdown.innerHTML = '';
-      if(!q){ dropdown.style.display='none'; return; }
-      const results = ALL_ITEMS.filter(it => normalizeText(it.item).includes(q)).slice(0,200);
-      if(!results.length){ dropdown.style.display='none'; return; }
-      results.forEach(it=>{
-        const div = document.createElement('div');
-        div.className = 'opt';
-        div.textContent = it.unit ? `${it.item} (${it.unit})` : it.item;
-        div.onclick = ()=> addItem(it);
-        dropdown.appendChild(div);
+    // Load items from Excel exported JSON (must include 'unit' column)
+    fetch("cc.json")
+      .then(res => res.json())
+      .then(data => {
+        inventory = data;
       });
-      dropdown.style.display = 'block';
+
+    const search = document.getElementById("search");
+    const results = document.getElementById("results");
+    const selectedList = document.getElementById("selectedList");
+    const hiddenSelectedField = document.getElementById("hiddenSelected");
+
+    search.addEventListener("input", () => {
+      const q = search.value.toLowerCase();
+      results.innerHTML = "";
+      if (!q) return;
+      const matches = inventory.filter(it => it.item.toLowerCase().includes(q));
+      matches.forEach(it => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.textContent = `${it.item} (${it.unit})`;  // 👈 Show unit in search results
+        div.onclick = () => addItem(it);
+        results.appendChild(div);
+      });
     });
 
-    function addItem(obj){
-      const qty = prompt(`Enter quantity for:\n${obj.item}${obj.unit ? ' ('+obj.unit+')' : ''}`, "1");
-      if(qty && !isNaN(qty)){
-        selected.push({ item: obj.item, unit: obj.unit, qty: qty });
-        renderSelected();
-      }
-      dropdown.style.display='none';
-      search.value='';
+    function addItem(it) {
+      const qty = prompt("Enter quantity:", "1");
+      if (!qty) return;
+      selected.push({ item: it.item, unit: it.unit, qty });
+      renderSelected();
     }
 
-    function removeItem(i){ selected.splice(i,1); renderSelected(); }
+    function removeItem(i) {
+      selected.splice(i, 1);
+      renderSelected();
+    }
 
-    function renderSelected(){
+    function renderSelected() {
       selectedList.innerHTML = '';
-      selected.forEach((it,i)=>{
+      selected.forEach((it, i) => {
         const row = document.createElement('div');
-        row.className='si';
-        row.innerHTML=`<span>${it.item} — ${it.qty} ${it.unit}</span>
-          <button class="rm" onclick="removeItem(${i})">Remove</button>`;
+        row.className = 'si';
+        row.innerHTML = `
+          <span style="flex:1;">
+            ${it.item} — ${it.qty} ${it.unit || ''}
+          </span>
+          <button class="rm" onclick="removeItem(${i})">Remove</button>
+        `;
         selectedList.appendChild(row);
       });
-      hiddenSelectedField.value = selected.map(it => `${it.item} — ${it.qty} ${it.unit}`).join('\n');
+
+      hiddenSelectedField.value = selected.length
+        ? `Selected items:\n• ${selected.map(it => `${it.item} — ${it.qty} ${it.unit || ''}`).join('\n• ')}`
+        : '';
     }
 
-    function collectCustomer(){
-      const name=$('custName').value.trim();
-      const phone=$('custPhone').value.trim();
-      const email=$('custEmail').value.trim();
-      const msg=$('custMsg').value.trim();
-      if(!name||!phone){alert('Please fill your Name and Phone.');return null;}
-      return {name,phone,email,msg};
+    function sendWhatsApp() {
+      const name = document.querySelector("input[name='name']").value;
+      const phone = document.querySelector("input[name='phone']").value;
+      const email = document.querySelector("input[name='email']").value;
+      const msg = document.querySelector("textarea[name='message']").value;
+      const items = hiddenSelectedField.value;
+
+      const text = `Enquiry Details:\n\n${items}\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nMessage: ${msg}`;
+      const url = `https://wa.me/918885750657?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
     }
-
-    function sendWhatsApp(){
-      const d=collectCustomer(); if(!d) return;
-      const items=selected.length?selected.map(it=>`${it.item} — ${it.qty} ${it.unit}`).join('\n• '):'(no items selected)';
-      const text=`Customer Enquiry - Electrical Items\n\nItems:\n• ${items}\n\nCustomer:\nName: ${d.name}\nPhone: ${d.phone}\nEmail: ${d.email}\nMessage: ${d.msg}`;
-      window.open('https://wa.me/'+WHATSAPP_NUMBER_IN+'?text='+encodeURIComponent(text),'_blank');
-    }
-
-    document.getElementById("enquiryForm").addEventListener("submit",async e=>{
-      e.preventDefault();
-      const form=e.target; const data=new FormData(form);
-      try{
-        const res=await fetch(form.action,{method:form.method,body:data,headers:{'Accept':'application/json'}});
-        if(res.ok){$('formResponse').style.display='block'; form.reset(); selected=[]; renderSelected();}
-        else alert('Error submitting form.');
-      }catch(err){ alert('Submission failed: '+err.message); }
-    });
-
-    window.sendWhatsApp=sendWhatsApp; window.removeItem=removeItem;
-    loadExcelItems();
   </script>
 </body>
 </html> 
