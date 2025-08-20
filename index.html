@@ -1,114 +1,260 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>SAI GANESH ELECTRICALS - SSE</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .container { max-width: 800px; margin: auto; }
-    input, button { margin: 5px; padding: 8px; }
-    .selected { margin-top: 20px; }
-    .item { margin: 5px 0; }
-    .remove { color: red; cursor: pointer; margin-left: 10px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>SAI GANESH ELECTRICALS - SSE</h2>
-    <p><b>Prop:</b> Dasari Krishna — <b>Phone:</b> 8987156057 —
-       <b>Email:</b> krishnasge@gmail.com</p>
-    <p><b>Sales Executive:</b> Vinodharsha —
-       <b>Email:</b> vinodharsha12@gmail.com —
-       <b>WhatsApp:</b> 7483328254</p>
+<!DOCTYPE html>  <html lang="en"> 
+<head> 
+  <meta charset="UTF-8" /> 
+  <title>SAI GANESH ELECTRICALS - SSE</title> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> 
+  <meta name="viewport" content="width=device-width,initial-scale=1" /> 
+  <style> 
+    body{font-family:Arial, sans-serif;margin:16px;background:#fafafa;color:#111} 
+    .header{background:#0b5bb3;color:#fff;padding:14px;border-radius:10px;margin-bottom:16px} 
+    .header h1{margin:0 0 6px 0;font-size:20px} 
+    .grid{display:grid;grid-template-columns:1fr;gap:12px} 
+    .search-wrap{position:relative;max-width:520px} 
+    #search{width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px} 
+    #dropdown{position:absolute;left:0;right:0;top:46px;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:260px;overflow:auto;display:none;z-index:10} 
+    .opt{padding:8px 10px;border-bottom:1px solid #f1f1f1;cursor:pointer} 
+    .opt:hover{background:#f5faff} 
+    .mark{background:yellow} 
+    .card{background:#fff;border:1px solid #e7e7e7;border-radius:10px;padding:12px} 
+    #selectedList .si{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid #eaeaea;border-radius:8px;margin-top:6px;background:#f8fcff} 
+    .rm{border:none;background:#e53935;color:#fff;border-radius:6px;padding:4px 8px;cursor:pointer} 
+    .btn{border:none;background:#0b5bb3;color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer} 
+    .btn:disabled{opacity:.6;cursor:not-allowed} 
+    .success{color:#1a7f37;font-weight:700;margin-top:8px} 
+    .field{margin:6px 0} 
+    .field input,.field textarea{width:100%;max-width:520px;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px} 
+    .company p{margin:2px 0} 
+    @media(min-width:880px){.grid{grid-template-columns:1.2fr .8fr}} 
+  </style> 
+</head> 
+<body> 
+  <div class="header"> 
+    <h1>SAI GANESH ELECTRICALS - SSE</h1> 
+    <div class="company"> 
+      <p><b>Prop:</b> Dasari Krishna — <b>Phone:</b> 9885750057 — <b>Email:</b> krishnadsge@gmail.com</p> 
+      <p><b>Sales Executive:</b> Vinodharsha — <b>Email:</b> vinodharsha21@gmail.com — <b>WhatsApp:</b> 7483362854</p> 
+      <p><i>We may be stationary, but our reach is dynamic!</i></p> 
+    </div> 
+  </div>    <div class="grid"> 
+    <!-- LEFT: Search + Selected --> 
+    <div class="card"> 
+      <h3>Search Inventory</h3> 
+      <div class="search-wrap"> 
+        <input id="search" type="text" placeholder="Type to search items (e.g., 1sqmm, 4 sqmm, conduit, fan)"/> 
+        <div id="dropdown"></div> 
+      </div>  <h3 style="margin-top:16px">Selected Items</h3> 
+  <div id="selectedList"></div> 
+</div> 
 
-    <h3>Search Inventory</h3>
-    <input type="text" id="searchBox" placeholder="Type to search items...">
-    <div id="suggestions"></div>
+<!-- RIGHT: Customer form --> 
+<div class="card"> 
+  <h3>Customer Details & Send Enquiry</h3> 
+  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST"> 
+    <input type="hidden" name="selected_items" id="selected_items_field" /> 
+    <div class="field"><input id="custName" name="name" placeholder="Your Name" required /></div> 
+    <div class="field"><input id="custPhone" name="phone" placeholder="Your Phone" required /></div> 
+    <div class="field"><input id="custEmail" name="email" placeholder="Your Email" /></div> 
+    <div class="field"><textarea id="custMsg" name="message" rows="4" placeholder="Additional message (optional)"></textarea></div> 
 
-    <div class="selected">
-      <h3>Selected Items</h3>
-      <div id="selectedItems"></div>
-    </div>
+    <div class="field" style="display:flex;gap:10px;flex-wrap:wrap"> 
+      <button type="button" class="btn" onclick="sendWhatsApp()">Send via WhatsApp</button> 
+      <button type="submit" class="btn">Send via Email</button> 
+    </div> 
+    <div id="formResponse" class="success" style="display:none">✅ Successfully submitted!</div> 
+  </form> 
+</div>
 
-    <h3>Customer Details & Send Enquiry</h3>
-    <input type="text" id="custName" placeholder="Your Name"><br>
-    <input type="email" id="custEmail" placeholder="Your Email"><br>
-    <input type="text" id="custPhone" placeholder="Your Phone"><br>
-    <input type="text" id="custMsg" placeholder="Additional message (Optional)"><br>
-    <button onclick="sendEmail()">Send via Email</button>
-    <button onclick="sendWhatsApp()">Send via WhatsApp</button>
-  </div>
-
-  <script>
-    let inventory = [];
-    let selectedItems = [];
-
-    // Load Excel file
-    fetch('cc.xlsx')
-      .then(res => res.arrayBuffer())
-      .then(data => {
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        inventory = XLSX.utils.sheet_to_json(sheet); // Will give objects {Item, Category, Unit}
-      });
-
-    // Search filter
-    document.getElementById("searchBox").addEventListener("input", function() {
-      let query = this.value.toLowerCase();
-      let suggestions = document.getElementById("suggestions");
-      suggestions.innerHTML = "";
-      if (query.length === 0) return;
-
-      let results = inventory.filter(row => row.Item && row.Item.toLowerCase().includes(query));
-      results.slice(0, 5).forEach(item => {
-        let div = document.createElement("div");
-        div.textContent = `${item.Item} (${item.Unit || ""})`;
-        div.style.cursor = "pointer";
-        div.onclick = () => addItem(item);
-        suggestions.appendChild(div);
-      });
-    });
-
-    // Add item
-    function addItem(item) {
-      selectedItems.push(item);
-      renderSelected();
-      document.getElementById("suggestions").innerHTML = "";
-      document.getElementById("searchBox").value = "";
-    }
-
-    // Render selected
-    function renderSelected() {
-      let container = document.getElementById("selectedItems");
-      container.innerHTML = "";
-      selectedItems.forEach((item, idx) => {
-        let div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `${item.Item} — ${item.Unit || ""} <span class="remove" onclick="removeItem(${idx})">[Remove]</span>`;
-        container.appendChild(div);
-      });
-    }
-
-    // Remove
-    function removeItem(index) {
-      selectedItems.splice(index, 1);
-      renderSelected();
-    }
-
-    // Email
-    function sendEmail() {
-      let body = "Selected Items:\n" + selectedItems.map(i => `${i.Item} — ${i.Unit || ""}`).join("\n");
-      body += `\n\nName: ${document.getElementById("custName").value}\nEmail: ${document.getElementById("custEmail").value}\nPhone: ${document.getElementById("custPhone").value}\nMessage: ${document.getElementById("custMsg").value}`;
-      window.location.href = `mailto:krishnasge@gmail.com?subject=Enquiry&body=${encodeURIComponent(body)}`;
-    }
-
-    // WhatsApp
-    function sendWhatsApp() {
-      let msg = "Selected Items:\n" + selectedItems.map(i => `${i.Item} — ${i.Unit || ""}`).join("\n");
-      msg += `\n\nName: ${document.getElementById("custName").value}\nEmail: ${document.getElementById("custEmail").value}\nPhone: ${document.getElementById("custPhone").value}\nMessage: ${document.getElementById("custMsg").value}`;
-      window.open(`https://wa.me/918987156057?text=${encodeURIComponent(msg)}`, "_blank");
-    }
-  </script>
-</body>
-</html> 
+  </div>    <script> 
+    // ------------------ Config ------------------ 
+    const EXCEL_FILE = 'cc.xlsx';            // Must be next to index.html 
+    const WHATSAPP_NUMBER_IN = '917483362854'; // +91 7483362854 
+ 
+    // ------------------ Helpers ----------------- 
+    const $ = id => document.getElementById(id); 
+    function normalizeText(s){ return String(s||'').toLowerCase().replace(/[\s.\-_/]+/g,''); } 
+    function normalizeHeader(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,''); } 
+    function highlightMatch(original, qNorm){ 
+      const plain = String(original); const compact = normalizeText(plain); 
+      const idx = compact.indexOf(qNorm); if(idx < 0) return plain; 
+      const map=[]; for(let i=0,c=0;i<plain.length;i++){ if(!/[\s.\-_/]/.test(plain[i])) map[c++]=i; } 
+      const s=map[idx]??0, e=(map[idx+qNorm.length-1]??(plain.length-1))+1; 
+      return plain.slice(0,s)+'<span class="mark">'+plain.slice(s,e)+'</span>'+plain.slice(e); 
+    } 
+ 
+    // Accept many header spellings 
+    const ITEM_HEADERS = ['item','items','description','product','material','materialname']; 
+    const UNIT_HEADERS = [ 
+      'unit','units','uom','unitofmeasure','unitofmeasurement','uomunits', 
+      'unitsuom','uomunit','unituom','measurementunit','qtyunit','quantityunit' 
+    ]; 
+ 
+    function findColIndex(headers, accepted){ 
+      const canon = headers.map(normalizeHeader); 
+      const acceptedCanon = accepted.map(normalizeHeader); 
+      // 1) exact match 
+      for(let i=0;i<canon.length;i++){ if(acceptedCanon.includes(canon[i])) return i; } 
+      // 2) contains 'unit' or 'uom' for unit; 'item'/'desc' for item 
+      for(let i=0;i<canon.length;i++){ 
+        const h = canon[i]; 
+        if (accepted === UNIT_HEADERS){ 
+          if (h.includes('unit') || h.includes('uom')) return i; 
+        } else { 
+          if (h.includes('item') || h.includes('desc') || h.includes('product') || h.includes('material')) return i; 
+        } 
+      } 
+      return -1; 
+    } 
+ 
+    // ------------------ Data -------------------- 
+    let ALL_ITEMS = []; // { item, unit } 
+    let selected = []; 
+ 
+    async function loadExcelItems(){ 
+      try{ 
+        const res = await fetch(EXCEL_FILE, {cache:'no-store'}); 
+        if(!res.ok) throw new Error('Cannot fetch cc.xlsx'); 
+        const buf = await res.arrayBuffer(); 
+        const wb = XLSX.read(buf, {type:'array'}); 
+        const ws = wb.Sheets[wb.SheetNames[0]]; 
+ 
+        // Use header:1 to control detection robustly 
+        const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''}); 
+        if(!rows.length){ throw new Error('Empty sheet'); } 
+ 
+        const headers = rows[0].map(h => h ?? ''); 
+        const itemCol = findColIndex(headers, ITEM_HEADERS); 
+        const unitCol = findColIndex(headers, UNIT_HEADERS); 
+ 
+        if(itemCol === -1){ 
+          console.warn('Item column not found. Headers:', headers); 
+          ALL_ITEMS = []; 
+          return; 
+        } 
+        if(unitCol === -1){ 
+          console.warn('Unit column not found. Units will be blank. Headers:', headers); 
+        } 
+ 
+        const items = []; 
+        for(let r=1; r<rows.length; r++){ 
+          const row = rows[r]; 
+          const item = (row[itemCol] ?? '').toString().trim(); 
+          const unit = unitCol >= 0 ? (row[unitCol] ?? '').toString().trim() : ''; 
+          if(item){ items.push({ item, unit }); } 
+        } 
+        ALL_ITEMS = items; 
+        // console.debug('Loaded sample:', ALL_ITEMS.slice(0,5)); 
+      }catch(err){ 
+        console.error('Excel load error:', err); 
+        ALL_ITEMS = []; 
+      } 
+    } 
+ 
+    // ------------------ UI ---------------------- 
+    const search = $('search'), dropdown = $('dropdown'); 
+    const selectedList = $('selectedList'); 
+    const hiddenSelectedField = $('selected_items_field'); 
+ 
+    search.addEventListener('input', () => { 
+      const q = normalizeText(search.value); 
+      dropdown.innerHTML = ''; 
+      if(!q){ dropdown.style.display='none'; return; } 
+ 
+      const results = ALL_ITEMS.filter(it => normalizeText(it.item).includes(q)).slice(0,300); 
+      if(results.length === 0){ dropdown.style.display='none'; return; } 
+ 
+      results.forEach(it=>{ 
+        const div = document.createElement('div'); 
+        const label = it.unit ? `${it.item} (${it.unit})` : it.item; 
+        div.className = 'opt'; 
+        div.innerHTML = highlightMatch(label, q); 
+        div.onclick = ()=> addItem(it); 
+        dropdown.appendChild(div); 
+      }); 
+      dropdown.style.display = 'block'; 
+    }); 
+ 
+    function addItem(obj){ 
+      const qty = prompt(`Enter quantity for:\n${obj.item}${obj.unit ? ' ('+obj.unit+')' : ''}`, "1"); 
+      if(qty && !isNaN(qty)){ 
+        selected.push({ item: obj.item, unit: obj.unit, qty: qty }); 
+        renderSelected(); 
+      } 
+      dropdown.style.display='none'; 
+      search.value=''; 
+      search.focus(); 
+    } 
+    function removeItem(idx){ selected.splice(idx,1); renderSelected(); } 
+ 
+    function renderSelected(){ 
+      selectedList.innerHTML = ''; 
+      selected.forEach((it, i)=>{ 
+        const unitTxt = it.unit ? ` ${it.unit}` : ''; 
+        const row = document.createElement('div'); 
+        row.className = 'si'; 
+        row.innerHTML = `<span>${it.item} — ${it.qty}${unitTxt}</span> 
+                         <button class="rm" onclick="removeItem(${i})">Remove</button>`; 
+        selectedList.appendChild(row); 
+      }); 
+      hiddenSelectedField.value = selected.length 
+        ? `Selected items:\n• ${selected.map(it => `${it.item} — ${it.qty}${it.unit ? ' '+it.unit : ''}`).join('\n• ')}` 
+        : ''; 
+    } 
+ 
+    // ------------------ Send -------------------- 
+    function collectCustomer(){ 
+      const name = $('custName').value.trim(); 
+      const phone = $('custPhone').value.trim(); 
+      const email = $('custEmail').value.trim(); 
+      const msg = $('custMsg').value.trim(); 
+      if(!name || !phone){ alert('Please fill your Name and Phone.'); return null; } 
+      return {name, phone, email, msg}; 
+    } 
+ 
+    function sendWhatsApp(){ 
+      const d = collectCustomer(); if(!d) return; 
+      const itemsText = selected.length 
+        ? selected.map(it => `${it.item} — ${it.qty}${it.unit ? ' '+it.unit : ''}`).join('\n• ') 
+        : '(no items selected)'; 
+      const text = 
+`Customer Enquiry - Electrical Items 
+ 
+Items: 
+• ${itemsText} 
+ 
+Customer: 
+Name: ${d.name} 
+Phone: ${d.phone} 
+Email: ${d.email} 
+Message: ${d.msg}`; 
+      const url = 'https://wa.me/' + WHATSAPP_NUMBER_IN + '?text=' + encodeURIComponent(text); 
+      window.open(url, '_blank'); 
+    } 
+ 
+    // Formspree submit without leaving page 
+    document.getElementById("enquiryForm").addEventListener("submit", async function(e){ 
+      e.preventDefault(); 
+      const form = e.target; 
+      const data = new FormData(form); 
+      try{ 
+        const res = await fetch(form.action, { method: form.method, body: data, headers: {'Accept':'application/json'} }); 
+        if(res.ok){ 
+          document.getElementById('formResponse').style.display = 'block'; 
+          form.reset(); 
+          selected = []; 
+          renderSelected(); 
+        }else{ 
+          alert('Error submitting form. Please try again.'); 
+        } 
+      }catch(err){ 
+        alert('Submission failed: '+err.message); 
+      } 
+    }); 
+ 
+    // Expose needed functions 
+    window.sendWhatsApp = sendWhatsApp; 
+    window.removeItem = removeItem; 
+ 
+    // Start 
+    loadExcelItems(); 
+  </script>  </body> 
+</html>  Layout with this code is needed
