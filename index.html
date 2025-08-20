@@ -4,187 +4,131 @@
   <meta charset="UTF-8">
   <title>SAI GANESH ELECTRICALS - SSE</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fff;
-    }
-    header {
-      background: #3f51b5;
-      color: white;
-      padding: 10px;
-      text-align: center;
-    }
-    #search {
-      display: block;
-      width: 90%;
-      margin: 15px auto;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    #results {
-      max-width: 90%;
-      margin: auto;
-    }
-    .item {
-      padding: 8px;
-      margin: 4px 0;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .item:hover {
-      background: #f0f0f0;
-    }
-    #selectedList {
-      max-width: 90%;
-      margin: 15px auto;
-    }
-    #selectedList .si {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      border: 1px solid #eaeaea;
-      border-radius: 8px;
-      margin-top: 6px;
-      background: #f8fcff;
-      white-space: nowrap;
-    }
-    .rm {
-      background: red;
-      color: white;
-      border: none;
-      padding: 4px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    form {
-      max-width: 90%;
-      margin: 20px auto;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #fafafa;
-    }
-    form input, form textarea {
-      display: block;
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    form button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-    .whatsapp { background: #25d366; color: white; }
-    .email { background: #3f51b5; color: white; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { background: #1e40af; color: white; padding: 15px; text-align: center; }
+    h1 { margin: 0; font-size: 20px; }
+    .contact { font-size: 14px; margin-top: 5px; }
+    .container { padding: 20px; max-width: 900px; margin: auto; }
+    .search-box { width: 100%; padding: 8px; margin-bottom: 15px; }
+    .selected { margin: 15px 0; }
+    .selected-item { display: flex; justify-content: space-between; padding: 5px; background: #f0f0f0; margin-bottom: 5px; border-radius: 5px; }
+    .remove-btn { background: red; color: white; border: none; padding: 2px 8px; cursor: pointer; border-radius: 3px; }
+    .form { margin-top: 20px; }
+    .form input, .form textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; }
+    .form button { margin-top: 10px; padding: 10px; width: 48%; border: none; cursor: pointer; border-radius: 5px; }
+    .btn-email { background: #2563eb; color: white; }
+    .btn-whatsapp { background: #25d366; color: white; }
+    .success { color: green; font-weight: bold; margin-top: 10px; }
   </style>
 </head>
 <body>
   <header>
-    <h2>SAI GANESH ELECTRICALS - SSE</h2>
-    <p>Prop: Dasari Krishna — Phone: 9885750657 — Email: krishnatsge@gmail.com</p>
-    <p>Sales Executive: Vindoharsha — Email: vindoharsha12@gmail.com — WhatsApp: 7483362854</p>
+    <h1>SAI GANESH ELECTRICALS - SSE</h1>
+    <div class="contact">
+      <b>Prop:</b> Dasari Krishna — 📞 9885750657 — ✉️ krishnasge@gmail.com <br>
+      <b>Sales Executive:</b> Vindoharsha — ✉️ vindoharsha12@gmail.com — WhatsApp: 7483328354
+    </div>
   </header>
 
-  <input type="text" id="search" placeholder="Type to search items (e.g. 1sqmm, 4sqmm, Conduit, fan)">
-  <div id="results"></div>
+  <div class="container">
+    <input type="text" id="search" class="search-box" placeholder="Type to search items (e.g. 1.5sqmm, 4sqmm conduit, fan)">
+    <div id="selected" class="selected"><b>Selected Items</b></div>
 
-  <h3 style="margin-left:5%;">Selected Items</h3>
-  <div id="selectedList"></div>
-
-  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
-    <h3>Customer Details & Send Enquiry</h3>
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="tel" name="phone" placeholder="Your Phone" required>
-    <input type="email" name="email" placeholder="Your Email" required>
-    <textarea name="message" placeholder="Additional message (optional)"></textarea>
-    <input type="hidden" name="selected" id="hiddenSelected">
-
-    <button type="button" class="whatsapp" onclick="sendWhatsApp()">Send via WhatsApp</button>
-    <button type="submit" class="email">Send via Email</button>
-  </form>
+    <form id="enquiryForm" class="form">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <input type="text" name="phone" placeholder="Your Phone" required>
+      <textarea name="message" placeholder="Additional message (optional)"></textarea>
+      <div>
+        <button type="submit" class="btn-email">Send via Email</button>
+        <button type="button" onclick="sendWhatsApp()" class="btn-whatsapp">Send via WhatsApp</button>
+      </div>
+      <div id="successMessage" class="success" style="display:none;">✅ Successfully submitted!</div>
+    </form>
+  </div>
 
   <script>
-    let inventory = [];
-    let selected = [];
+    // ✅ Inventory directly inside code (from your cc.xlsx)
+    const inventory = [
+      { Item: "0.4x2Pair 100mtr Telephone Wire", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "0.5sqmm 2core CCTV Camera Wire", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "0.5sqmm Single Core Copper Flexible", Category: "Wires & Cables", Unit: "MTRS" },
+      { Item: "0.5x2Pair Telephone Cable 90mtr Coil", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 2core Copper Flexible Wire", Category: "Wires & Cables", Unit: "MTRS" },
+      { Item: "1.5x2Core COPPER FLEXIBLE Cable (Chk)", Category: "Wires & Cables", Unit: "MTRS" },
+      { Item: "1.5sqmm 300mtr Ind Copper Wire Frls", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 180mtr Ind Copper Wire", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 90mtr Ind Copper Wire Black", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 300mtr Ind Copper Wire Blue", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 300mtr Ind Copper Wire Green", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 300mtr Ind Copper Wire Frls", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 90mtr Ind Copper Wire Grey", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 90mtr Ind Copper Wire Red", Category: "Wires & Cables", Unit: "COILS" },
+      { Item: "1.5sqmm 90mtr Ind Copper Wire Yellow", Category: "Wires & Cables", Unit: "COILS" }
+    ];
 
-    // Load items from Excel exported JSON (must include 'unit' column)
-    fetch("cc.json")
-      .then(res => res.json())
-      .then(data => {
-        inventory = data;
-      });
+    const searchInput = document.getElementById("search");
+    const selectedDiv = document.getElementById("selected");
+    let selectedItems = [];
 
-    const search = document.getElementById("search");
-    const results = document.getElementById("results");
-    const selectedList = document.getElementById("selectedList");
-    const hiddenSelectedField = document.getElementById("hiddenSelected");
-
-    search.addEventListener("input", () => {
-      const q = search.value.toLowerCase();
-      results.innerHTML = "";
-      if (!q) return;
-      const matches = inventory.filter(it => it.item.toLowerCase().includes(q));
-      matches.forEach(it => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.textContent = `${it.item} (${it.unit})`;  // 👈 Show unit in search results
-        div.onclick = () => addItem(it);
-        results.appendChild(div);
-      });
+    searchInput.addEventListener("keyup", function(e) {
+      if (e.key === "Enter") {
+        const query = searchInput.value.trim().toLowerCase();
+        const found = inventory.find(item => item.Item.toLowerCase().includes(query));
+        if (found) {
+          selectedItems.push(found);
+          renderSelected();
+          searchInput.value = "";
+        } else {
+          alert("❌ Item not found in inventory!");
+        }
+      }
     });
 
-    function addItem(it) {
-      const qty = prompt("Enter quantity:", "1");
-      if (!qty) return;
-      selected.push({ item: it.item, unit: it.unit, qty });
-      renderSelected();
-    }
-
-    function removeItem(i) {
-      selected.splice(i, 1);
-      renderSelected();
-    }
-
     function renderSelected() {
-      selectedList.innerHTML = '';
-      selected.forEach((it, i) => {
-        const row = document.createElement('div');
-        row.className = 'si';
-        row.innerHTML = `
-          <span style="flex:1;">
-            ${it.item} — ${it.qty} ${it.unit || ''}
-          </span>
-          <button class="rm" onclick="removeItem(${i})">Remove</button>
-        `;
-        selectedList.appendChild(row);
+      selectedDiv.innerHTML = "<b>Selected Items</b>";
+      selectedItems.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "selected-item";
+        div.innerHTML = `${item.Item} — ${item.Unit}
+          <button class="remove-btn" onclick="removeItem(${index})">Remove</button>`;
+        selectedDiv.appendChild(div);
       });
-
-      hiddenSelectedField.value = selected.length
-        ? `Selected items:\n• ${selected.map(it => `${it.item} — ${it.qty} ${it.unit || ''}`).join('\n• ')}`
-        : '';
     }
 
+    function removeItem(index) {
+      selectedItems.splice(index, 1);
+      renderSelected();
+    }
+
+    // ✅ Send via WhatsApp
     function sendWhatsApp() {
-      const name = document.querySelector("input[name='name']").value;
-      const phone = document.querySelector("input[name='phone']").value;
-      const email = document.querySelector("input[name='email']").value;
-      const msg = document.querySelector("textarea[name='message']").value;
-      const items = hiddenSelectedField.value;
-
-      const text = `Enquiry Details:\n\n${items}\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nMessage: ${msg}`;
-      const url = `https://wa.me/918885750657?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank");
+      let msg = "Enquiry:%0A";
+      selectedItems.forEach(it => { msg += `${it.Item} — ${it.Unit}%0A`; });
+      window.open(`https://wa.me/918885750657?text=${msg}`, "_blank");
     }
+
+    // ✅ Email Formspree submission
+    document.getElementById("enquiryForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      formData.append("items", JSON.stringify(selectedItems));
+
+      fetch("https://formspree.io/f/xnnzygoz", {
+        method: "POST",
+        body: formData,
+        headers: { "Accept": "application/json" }
+      }).then(response => {
+        if (response.ok) {
+          document.getElementById("successMessage").style.display = "block";
+          selectedItems = [];
+          renderSelected();
+          this.reset();
+        } else {
+          alert("❌ Submission failed!");
+        }
+      });
+    });
   </script>
 </body>
 </html> 
