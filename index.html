@@ -3,128 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <title>SAI GANESH ELECTRICALS - SSE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background: #003399; color: white; padding: 15px; text-align: center; }
-    .container { padding: 20px; max-width: 900px; margin: auto; }
-    input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
-    button { padding: 10px 15px; margin: 5px; cursor: pointer; }
-    .blue { background: #007BFF; color: white; border: none; }
-    .green { background: #25D366; color: white; border: none; }
-    ul { list-style: none; padding: 0; }
-    li { margin: 5px 0; background: #f2f2f2; padding: 8px; border-radius: 5px; }
-    .remove { background: red; color: white; border: none; padding: 5px 10px; margin-left: 10px; cursor: pointer; }
-    .suggestions { border: 1px solid #ccc; max-height: 150px; overflow-y: auto; position: absolute; background: white; width: calc(100% - 20px); z-index: 1000; }
-    .suggestions div { padding: 8px; cursor: pointer; }
-    .suggestions div:hover { background: #f0f0f0; }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 800px; margin: auto; }
+    input, button { margin: 5px; padding: 8px; }
+    .selected { margin-top: 20px; }
+    .item { margin: 5px 0; }
+    .remove { color: red; cursor: pointer; margin-left: 10px; }
   </style>
 </head>
 <body>
-  <header>
-    <h2>SAI GANESH ELECTRICALS - SSE</h2>
-    <p>Prop: Dasari Krishna — Phone: 9881756057 — Email: krishnasge@gmail.com</p>
-    <p>Sales Executive: Vinodharsha — Email: vinodharsha12@gmail.com — WhatsApp: 7483362854</p>
-  </header>
-
   <div class="container">
-    <h3>Search Inventory</h3>
-    <input type="text" id="search" placeholder="Type to search items...">
-    <div id="suggestions" class="suggestions" style="display:none;"></div>
+    <h2>SAI GANESH ELECTRICALS - SSE</h2>
+    <p><b>Prop:</b> Dasari Krishna — <b>Phone:</b> 8987156057 —
+       <b>Email:</b> krishnasge@gmail.com</p>
+    <p><b>Sales Executive:</b> Vinodharsha —
+       <b>Email:</b> vinodharsha12@gmail.com —
+       <b>WhatsApp:</b> 7483328254</p>
 
-    <h3>Selected Items</h3>
-    <ul id="selected"></ul>
+    <h3>Search Inventory</h3>
+    <input type="text" id="searchBox" placeholder="Type to search items...">
+    <div id="suggestions"></div>
+
+    <div class="selected">
+      <h3>Selected Items</h3>
+      <div id="selectedItems"></div>
+    </div>
 
     <h3>Customer Details & Send Enquiry</h3>
-    <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <input type="text" name="phone" placeholder="Your Phone" required>
-      <textarea name="message" placeholder="Additional message (optional)"></textarea>
-      <input type="hidden" name="selectedItems" id="hiddenItems">
-
-      <button type="submit" class="blue">Send via Email</button>
-      <button type="button" class="green" onclick="sendWhatsApp()">Send via WhatsApp</button>
-    </form>
+    <input type="text" id="custName" placeholder="Your Name"><br>
+    <input type="email" id="custEmail" placeholder="Your Email"><br>
+    <input type="text" id="custPhone" placeholder="Your Phone"><br>
+    <input type="text" id="custMsg" placeholder="Additional message (Optional)"><br>
+    <button onclick="sendEmail()">Send via Email</button>
+    <button onclick="sendWhatsApp()">Send via WhatsApp</button>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script>
     let inventory = [];
     let selectedItems = [];
 
-    // Load Excel
-    fetch("cc.xlsx").then(res => res.arrayBuffer()).then(data => {
-      let workbook = XLSX.read(data, {type: "array"});
-      let sheet = workbook.Sheets[workbook.SheetNames[0]];
-      inventory = XLSX.utils.sheet_to_json(sheet);
-    });
+    // Load Excel file
+    fetch('cc.xlsx')
+      .then(res => res.arrayBuffer())
+      .then(data => {
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        inventory = XLSX.utils.sheet_to_json(sheet); // Will give objects {Item, Category, Unit}
+      });
 
-    const searchInput = document.getElementById("search");
-    const suggestionsBox = document.getElementById("suggestions");
-
-    searchInput.addEventListener("input", function() {
+    // Search filter
+    document.getElementById("searchBox").addEventListener("input", function() {
       let query = this.value.toLowerCase();
-      suggestionsBox.innerHTML = "";
-      if (!query) { suggestionsBox.style.display = "none"; return; }
-      let matches = inventory.filter(item => item.Item.toLowerCase().includes(query));
-      if (matches.length > 0) {
-        suggestionsBox.style.display = "block";
-        matches.forEach(item => {
-          let div = document.createElement("div");
-          div.textContent = `${item.Item} (${item.Unit})`;
-          div.onclick = function() {
-            addItem(item);
-            searchInput.value = "";
-            suggestionsBox.style.display = "none";
-          };
-          suggestionsBox.appendChild(div);
-        });
-      } else {
-        suggestionsBox.style.display = "none";
-      }
+      let suggestions = document.getElementById("suggestions");
+      suggestions.innerHTML = "";
+      if (query.length === 0) return;
+
+      let results = inventory.filter(row => row.Item && row.Item.toLowerCase().includes(query));
+      results.slice(0, 5).forEach(item => {
+        let div = document.createElement("div");
+        div.textContent = `${item.Item} (${item.Unit || ""})`;
+        div.style.cursor = "pointer";
+        div.onclick = () => addItem(item);
+        suggestions.appendChild(div);
+      });
     });
 
+    // Add item
     function addItem(item) {
       selectedItems.push(item);
       renderSelected();
+      document.getElementById("suggestions").innerHTML = "";
+      document.getElementById("searchBox").value = "";
     }
 
+    // Render selected
     function renderSelected() {
-      const ul = document.getElementById("selected");
-      ul.innerHTML = "";
-      selectedItems.forEach((item, i) => {
-        let li = document.createElement("li");
-        li.textContent = `${item.Item} — ${item.Unit}`;
-        let btn = document.createElement("button");
-        btn.textContent = "Remove";
-        btn.className = "remove";
-        btn.onclick = () => { selectedItems.splice(i,1); renderSelected(); };
-        li.appendChild(btn);
-        ul.appendChild(li);
+      let container = document.getElementById("selectedItems");
+      container.innerHTML = "";
+      selectedItems.forEach((item, idx) => {
+        let div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `${item.Item} — ${item.Unit || ""} <span class="remove" onclick="removeItem(${idx})">[Remove]</span>`;
+        container.appendChild(div);
       });
-      document.getElementById("hiddenItems").value = selectedItems.map(i => `${i.Item} (${i.Unit})`).join(", ");
     }
 
+    // Remove
+    function removeItem(index) {
+      selectedItems.splice(index, 1);
+      renderSelected();
+    }
+
+    // Email
+    function sendEmail() {
+      let body = "Selected Items:\n" + selectedItems.map(i => `${i.Item} — ${i.Unit || ""}`).join("\n");
+      body += `\n\nName: ${document.getElementById("custName").value}\nEmail: ${document.getElementById("custEmail").value}\nPhone: ${document.getElementById("custPhone").value}\nMessage: ${document.getElementById("custMsg").value}`;
+      window.location.href = `mailto:krishnasge@gmail.com?subject=Enquiry&body=${encodeURIComponent(body)}`;
+    }
+
+    // WhatsApp
     function sendWhatsApp() {
-      let customer = document.querySelector("input[name='name']").value;
-      let phone = document.querySelector("input[name='phone']").value;
-      let email = document.querySelector("input[name='email']").value;
-      let msg = document.querySelector("textarea[name='message']").value;
-      let items = selectedItems.map(i => `${i.Item} (${i.Unit})`).join(", ");
-      let text = `Enquiry:%0AItems: ${items}%0ACustomer: ${customer}%0APhone: ${phone}%0AEmail: ${email}%0AMessage: ${msg}`;
-      window.open(`https://wa.me/918881756057?text=${text}`, "_blank");
+      let msg = "Selected Items:\n" + selectedItems.map(i => `${i.Item} — ${i.Unit || ""}`).join("\n");
+      msg += `\n\nName: ${document.getElementById("custName").value}\nEmail: ${document.getElementById("custEmail").value}\nPhone: ${document.getElementById("custPhone").value}\nMessage: ${document.getElementById("custMsg").value}`;
+      window.open(`https://wa.me/918987156057?text=${encodeURIComponent(msg)}`, "_blank");
     }
-
-    // Formspree success
-    document.getElementById("enquiryForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      fetch(this.action, {
-        method: this.method,
-        body: new FormData(this),
-        headers: { 'Accept': 'application/json' }
-      }).then(() => alert("✅ Successfully Submitted!"))
-        .catch(() => alert("❌ Error submitting form."));
-    });
   </script>
 </body>
 </html> 
