@@ -84,7 +84,7 @@
     // Accept many header spellings 
     const ITEM_HEADERS = ['item','items','description','product','material','materialname']; 
     const UNIT_HEADERS = [ 
-      'unit','units','uom','unitofmeasure','unitofmeasurement','uomunits', 
+      'Unit','units','uom','unitofmeasure','unitofmeasurement','uomunits', 
       'unitsuom','uomunit','unituom','measurementunit','qtyunit','quantityunit' 
     ]; 
  
@@ -106,7 +106,7 @@
     } 
  
     // ------------------ Data -------------------- 
-    let ALL_ITEMS = []; // { item, unit } 
+    let ALL_ITEMS = []; // { item, Unit } 
     let selected = []; 
  
     async function loadExcelItems(){ 
@@ -257,5 +257,6 @@ Message: ${d.msg}`;
     // Start 
     loadExcelItems(); 
   </script>  </body> 
-</html>  mention units in msg box if it it confusing
+</html>  mention units in msg box if it is confusing
+
 
