@@ -5,129 +5,125 @@
   <title>SAI GANESH ELECTRICALS - SSE</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background: #1e40af; color: white; padding: 15px; text-align: center; }
-    h1 { margin: 0; font-size: 20px; }
-    .contact { font-size: 14px; margin-top: 5px; }
+    header { background: #003399; color: white; padding: 15px; text-align: center; }
     .container { padding: 20px; max-width: 900px; margin: auto; }
-    .search-box { width: 100%; padding: 8px; margin-bottom: 15px; }
-    .selected { margin: 15px 0; }
-    .selected-item { display: flex; justify-content: space-between; padding: 5px; background: #f0f0f0; margin-bottom: 5px; border-radius: 5px; }
-    .remove-btn { background: red; color: white; border: none; padding: 2px 8px; cursor: pointer; border-radius: 3px; }
-    .form { margin-top: 20px; }
-    .form input, .form textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; }
-    .form button { margin-top: 10px; padding: 10px; width: 48%; border: none; cursor: pointer; border-radius: 5px; }
-    .btn-email { background: #2563eb; color: white; }
-    .btn-whatsapp { background: #25d366; color: white; }
-    .success { color: green; font-weight: bold; margin-top: 10px; }
+    input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
+    button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    .blue { background: #007BFF; color: white; border: none; }
+    .green { background: #25D366; color: white; border: none; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 5px 0; background: #f2f2f2; padding: 8px; border-radius: 5px; }
+    .remove { background: red; color: white; border: none; padding: 5px 10px; margin-left: 10px; cursor: pointer; }
+    .suggestions { border: 1px solid #ccc; max-height: 150px; overflow-y: auto; position: absolute; background: white; width: calc(100% - 20px); z-index: 1000; }
+    .suggestions div { padding: 8px; cursor: pointer; }
+    .suggestions div:hover { background: #f0f0f0; }
   </style>
 </head>
 <body>
   <header>
-    <h1>SAI GANESH ELECTRICALS - SSE</h1>
-    <div class="contact">
-      <b>Prop:</b> Dasari Krishna — 📞 9885750657 — ✉️ krishnasge@gmail.com <br>
-      <b>Sales Executive:</b> Vindoharsha — ✉️ vindoharsha12@gmail.com — WhatsApp: 7483328354
-    </div>
+    <h2>SAI GANESH ELECTRICALS - SSE</h2>
+    <p>Prop: Dasari Krishna — Phone: 9881756057 — Email: krishnasge@gmail.com</p>
+    <p>Sales Executive: Vinodharsha — Email: vinodharsha12@gmail.com — WhatsApp: 7483362854</p>
   </header>
 
   <div class="container">
-    <input type="text" id="search" class="search-box" placeholder="Type to search items (e.g. 1.5sqmm, 4sqmm conduit, fan)">
-    <div id="selected" class="selected"><b>Selected Items</b></div>
+    <h3>Search Inventory</h3>
+    <input type="text" id="search" placeholder="Type to search items...">
+    <div id="suggestions" class="suggestions" style="display:none;"></div>
 
-    <form id="enquiryForm" class="form">
+    <h3>Selected Items</h3>
+    <ul id="selected"></ul>
+
+    <h3>Customer Details & Send Enquiry</h3>
+    <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST">
       <input type="text" name="name" placeholder="Your Name" required>
       <input type="email" name="email" placeholder="Your Email" required>
       <input type="text" name="phone" placeholder="Your Phone" required>
       <textarea name="message" placeholder="Additional message (optional)"></textarea>
-      <div>
-        <button type="submit" class="btn-email">Send via Email</button>
-        <button type="button" onclick="sendWhatsApp()" class="btn-whatsapp">Send via WhatsApp</button>
-      </div>
-      <div id="successMessage" class="success" style="display:none;">✅ Successfully submitted!</div>
+      <input type="hidden" name="selectedItems" id="hiddenItems">
+
+      <button type="submit" class="blue">Send via Email</button>
+      <button type="button" class="green" onclick="sendWhatsApp()">Send via WhatsApp</button>
     </form>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script>
-    // ✅ Inventory directly inside code (from your cc.xlsx)
-    const inventory = [
-      { Item: "0.4x2Pair 100mtr Telephone Wire", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "0.5sqmm 2core CCTV Camera Wire", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "0.5sqmm Single Core Copper Flexible", Category: "Wires & Cables", Unit: "MTRS" },
-      { Item: "0.5x2Pair Telephone Cable 90mtr Coil", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 2core Copper Flexible Wire", Category: "Wires & Cables", Unit: "MTRS" },
-      { Item: "1.5x2Core COPPER FLEXIBLE Cable (Chk)", Category: "Wires & Cables", Unit: "MTRS" },
-      { Item: "1.5sqmm 300mtr Ind Copper Wire Frls", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 180mtr Ind Copper Wire", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 90mtr Ind Copper Wire Black", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 300mtr Ind Copper Wire Blue", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 300mtr Ind Copper Wire Green", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 300mtr Ind Copper Wire Frls", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 90mtr Ind Copper Wire Grey", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 90mtr Ind Copper Wire Red", Category: "Wires & Cables", Unit: "COILS" },
-      { Item: "1.5sqmm 90mtr Ind Copper Wire Yellow", Category: "Wires & Cables", Unit: "COILS" }
-    ];
-
-    const searchInput = document.getElementById("search");
-    const selectedDiv = document.getElementById("selected");
+    let inventory = [];
     let selectedItems = [];
 
-    searchInput.addEventListener("keyup", function(e) {
-      if (e.key === "Enter") {
-        const query = searchInput.value.trim().toLowerCase();
-        const found = inventory.find(item => item.Item.toLowerCase().includes(query));
-        if (found) {
-          selectedItems.push(found);
-          renderSelected();
-          searchInput.value = "";
-        } else {
-          alert("❌ Item not found in inventory!");
-        }
+    // Load Excel
+    fetch("cc.xlsx").then(res => res.arrayBuffer()).then(data => {
+      let workbook = XLSX.read(data, {type: "array"});
+      let sheet = workbook.Sheets[workbook.SheetNames[0]];
+      inventory = XLSX.utils.sheet_to_json(sheet);
+    });
+
+    const searchInput = document.getElementById("search");
+    const suggestionsBox = document.getElementById("suggestions");
+
+    searchInput.addEventListener("input", function() {
+      let query = this.value.toLowerCase();
+      suggestionsBox.innerHTML = "";
+      if (!query) { suggestionsBox.style.display = "none"; return; }
+      let matches = inventory.filter(item => item.Item.toLowerCase().includes(query));
+      if (matches.length > 0) {
+        suggestionsBox.style.display = "block";
+        matches.forEach(item => {
+          let div = document.createElement("div");
+          div.textContent = `${item.Item} (${item.Unit})`;
+          div.onclick = function() {
+            addItem(item);
+            searchInput.value = "";
+            suggestionsBox.style.display = "none";
+          };
+          suggestionsBox.appendChild(div);
+        });
+      } else {
+        suggestionsBox.style.display = "none";
       }
     });
 
-    function renderSelected() {
-      selectedDiv.innerHTML = "<b>Selected Items</b>";
-      selectedItems.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "selected-item";
-        div.innerHTML = `${item.Item} — ${item.Unit}
-          <button class="remove-btn" onclick="removeItem(${index})">Remove</button>`;
-        selectedDiv.appendChild(div);
-      });
-    }
-
-    function removeItem(index) {
-      selectedItems.splice(index, 1);
+    function addItem(item) {
+      selectedItems.push(item);
       renderSelected();
     }
 
-    // ✅ Send via WhatsApp
-    function sendWhatsApp() {
-      let msg = "Enquiry:%0A";
-      selectedItems.forEach(it => { msg += `${it.Item} — ${it.Unit}%0A`; });
-      window.open(`https://wa.me/918885750657?text=${msg}`, "_blank");
+    function renderSelected() {
+      const ul = document.getElementById("selected");
+      ul.innerHTML = "";
+      selectedItems.forEach((item, i) => {
+        let li = document.createElement("li");
+        li.textContent = `${item.Item} — ${item.Unit}`;
+        let btn = document.createElement("button");
+        btn.textContent = "Remove";
+        btn.className = "remove";
+        btn.onclick = () => { selectedItems.splice(i,1); renderSelected(); };
+        li.appendChild(btn);
+        ul.appendChild(li);
+      });
+      document.getElementById("hiddenItems").value = selectedItems.map(i => `${i.Item} (${i.Unit})`).join(", ");
     }
 
-    // ✅ Email Formspree submission
+    function sendWhatsApp() {
+      let customer = document.querySelector("input[name='name']").value;
+      let phone = document.querySelector("input[name='phone']").value;
+      let email = document.querySelector("input[name='email']").value;
+      let msg = document.querySelector("textarea[name='message']").value;
+      let items = selectedItems.map(i => `${i.Item} (${i.Unit})`).join(", ");
+      let text = `Enquiry:%0AItems: ${items}%0ACustomer: ${customer}%0APhone: ${phone}%0AEmail: ${email}%0AMessage: ${msg}`;
+      window.open(`https://wa.me/918881756057?text=${text}`, "_blank");
+    }
+
+    // Formspree success
     document.getElementById("enquiryForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const formData = new FormData(this);
-      formData.append("items", JSON.stringify(selectedItems));
-
-      fetch("https://formspree.io/f/xnnzygoz", {
-        method: "POST",
-        body: formData,
-        headers: { "Accept": "application/json" }
-      }).then(response => {
-        if (response.ok) {
-          document.getElementById("successMessage").style.display = "block";
-          selectedItems = [];
-          renderSelected();
-          this.reset();
-        } else {
-          alert("❌ Submission failed!");
-        }
-      });
+      fetch(this.action, {
+        method: this.method,
+        body: new FormData(this),
+        headers: { 'Accept': 'application/json' }
+      }).then(() => alert("✅ Successfully Submitted!"))
+        .catch(() => alert("❌ Error submitting form."));
     });
   </script>
 </body>
