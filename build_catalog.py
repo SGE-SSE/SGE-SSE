@@ -157,7 +157,7 @@ html_content += """
   </div>
 
   <h2>Customer Details</h2>
-  <form action="https://formspree.io/f/xnnbnkyb" method="POST" onsubmit="handleFormSubmit(event)">
+  <form action="https://formspree.io/f/xnnzygoz" method="POST" onsubmit="handleFormSubmit(event)">
     <label>Name:</label><br>
     <input type="text" name="name" required><br>
     <label>Email:</label><br>
@@ -179,3 +179,4 @@ with open("catalog.html", "w", encoding="utf-8") as f:
 
 
 print("✅ Catalog website with inline success message generated: catalog.html")
+
