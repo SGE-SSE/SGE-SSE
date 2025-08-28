@@ -49,7 +49,7 @@
 <!-- RIGHT: Customer form --> 
 <div class="card"> 
   <h3>Customer Details & Send Enquiry</h3> 
-  <form id="enquiryForm" action="https://formspree.io/f/xnnbnkyb" method="POST"> 
+  <form id="enquiryForm" action="https://formspree.io/f/xnnzygoz" method="POST"> 
     <input type="hidden" name="selected_items" id="selected_items_field" /> 
     <div class="field"><input id="custName" name="name" placeholder="Your Name" required /></div> 
     <div class="field"><input id="custPhone" name="phone" placeholder="Your Phone" required /></div> 
@@ -84,7 +84,7 @@
     // Accept many header spellings 
     const ITEM_HEADERS = ['item','items','description','product','material','materialname']; 
     const UNIT_HEADERS = [ 
-      'Unit','units','uom','unitofmeasure','unitofmeasurement','uomunits', 
+      'unit','units','uom','unitofmeasure','unitofmeasurement','uomunits', 
       'unitsuom','uomunit','unituom','measurementunit','qtyunit','quantityunit' 
     ]; 
  
@@ -106,7 +106,7 @@
     } 
  
     // ------------------ Data -------------------- 
-    let ALL_ITEMS = []; // { item, Unit } 
+    let ALL_ITEMS = []; // { item, unit } 
     let selected = []; 
  
     async function loadExcelItems(){ 
@@ -257,11 +257,4 @@ Message: ${d.msg}`;
     // Start 
     loadExcelItems(); 
   </script>  </body> 
-</html>  ind copper in coils, armud&flexible in mtrs,miscellaneous and accessories in : nos/pkt/box/bun.
-
-
-
-
-
-
-
+</html>  Layout with this code is needed
